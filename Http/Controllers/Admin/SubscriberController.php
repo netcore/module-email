@@ -10,15 +10,28 @@ use Modules\Email\Models\Subscriber;
 class SubscriberController extends Controller
 {
     /**
+     * @var string
+     */
+    private $viewNamespace = 'email::subscribers';
+
+    /**
+     * @return mixed
+     */
+    public function pagination()
+    {
+        return datatables()->of(Subscriber::select('id', 'email'))->addColumn('actions', function ($subscriber) {
+            return view('email::subscribers.tds.actions', compact('subscriber'))->render();
+        })->rawColumns(['actions'])->make(true);
+    }
+
+    /**
      * Display a listing of the resource.
      *
      * @return Response
      */
     public function index()
     {
-        $subscribers = Subscriber::all();
-
-        return view('email::subscribers.index', compact('subscribers'));
+        return view($this->viewNamespace . '.index');
     }
 
     /**

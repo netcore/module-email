@@ -11,7 +11,7 @@
                 </div>
                 <div class="panel-body">
                     <div class="table-primary">
-                        <table class="table table-bordered" id="datatable">
+                        <table class="table table-bordered datatable">
                             <thead>
                             <tr>
                                 <th>Name</th>
@@ -44,28 +44,5 @@
 @endsection
 
 @section('scripts')
-    <script>
-        $(function () {
-            $('#datatable').DataTable({
-                responsive: true,
-
-                columns: [
-                    {
-                        data: 'name',
-                        name: 'name'
-                    },
-                    {
-                        data: 'actions',
-                        name: 'actions',
-                        searchable: false,
-                        sortable: false,
-                        width: '10%',
-                        className: 'text-center'
-                    }
-                ],
-
-                order: [[0, 'asc']]
-            })
-        });
-    </script>
+    <script src="{{ versionedAsset('assets/email/admin/js/automated_emails_index.js') }}" type="text/javascript"></script>
 @endsection

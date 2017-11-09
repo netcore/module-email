@@ -27,9 +27,9 @@
     <label class="col-md-2 control-label">Frequency</label>
     <div class="col-md-8">
         <div class="input-group">
-            {!! Form::number('period_number', $period_number, ['class' => 'form-control','min' => 1, 'max' => 365]) !!}
+            {!! Form::number('period_number', $periodNumber, ['class' => 'form-control','min' => 1, 'max' => 365]) !!}
             <span class="input-group-addon"></span>
-            {!! Form::select('period_type', ['d' => 'day/s', 'w' => 'week/s', 'm' => 'month/s', 'y' => 'year/s'], $period_type, ['class' => 'form-control']) !!}
+            {!! Form::select('period_type', ['d' => 'day/s', 'w' => 'week/s', 'm' => 'month/s', 'y' => 'year/s'], $periodType, ['class' => 'form-control']) !!}
         </div>
     </div>
 </div>
@@ -37,6 +37,6 @@
 <div class="form-group">
     <label class="col-md-2 control-label">Active?</label>
     <div class="col-md-8">
-        {!! Form::checkbox('is_active', null, null, ['data-render' => 'switchery', 'data-theme' => 'default']) !!}
+        {!! Form::checkbox('is_active', null, null) !!}
     </div>
 </div>

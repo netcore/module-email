@@ -12,6 +12,11 @@ use Modules\Email\Models\Campaign;
 class CampaignController extends Controller
 {
     /**
+     * @var string
+     */
+    private $viewNamespace = 'email::campaigns';
+
+    /**
      * Display a listing of the resource.
      *
      * @return Response
@@ -20,7 +25,7 @@ class CampaignController extends Controller
     {
         $campaigns = Campaign::all();
 
-        return view('email::campaigns.index', compact('campaigns'));
+        return view($this->viewNamespace . '.index', compact('campaigns'));
     }
 
     /**
@@ -32,7 +37,7 @@ class CampaignController extends Controller
     {
         $filters = [];
 
-        return view('email::campaigns.create', compact('filters'));
+        return view($this->viewNamespace . '.create', compact('filters'));
     }
 
     /**
@@ -59,7 +64,7 @@ class CampaignController extends Controller
     {
         $filters = [];
 
-        return view('email::campaigns.edit', compact('campaign', 'filters'));
+        return view($this->viewNamespace . '.edit', compact('campaign', 'filters'));
     }
 
     /**
@@ -129,8 +134,7 @@ class CampaignController extends Controller
             return view('email::campaigns.tds.sent', compact('user'))->render();
         })->addColumn('actions', function ($user) use ($campaign) {
             return view('email::campaigns.tds.actions', compact('campaign', 'user'))->render();
-        })->rawColumns(['actions'])
-            ->make(true);
+        })->rawColumns(['actions'])->make(true);
     }
 
     /**

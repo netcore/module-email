@@ -87,7 +87,7 @@ class AutomatedEmail extends Model
         $period = substr($this->period, -1); // h, m, d etc.
         $method = $this->getMethod($period);
         if (!$method) {
-            return;
+            return false;
         }
 
         $carbon = Carbon::now()->{$method}($number);

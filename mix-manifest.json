@@ -1,3 +1,6 @@
 {
-    "/Assets/admin/js/campaign.js": "/Assets/admin/js/campaign.js"
+    "/Assets/admin/js/subscribers_index.js": "/Assets/admin/js/subscribers_index.js",
+    "/Assets/admin/js/campaigns_index.js": "/Assets/admin/js/campaigns_index.js",
+    "/Assets/admin/js/campaigns_form.js": "/Assets/admin/js/campaigns_form.js",
+    "/Assets/admin/js/automated_emails_index.js": "/Assets/admin/js/automated_emails_index.js"
 }

@@ -10,27 +10,18 @@
                     <h4 class="panel-title">Subscribers</h4>
                 </div>
                 <div class="panel-body">
-                    <table class="table table-bordered" id="datatable">
-                        <thead>
-                        <tr>
-                            <th>Email</th>
-                            <th class="text-center">Actions</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        @foreach ($subscribers as $subscriber)
+                    <div class="table-primary">
+                        <table class="table table-bordered datatable">
+                            <thead>
                             <tr>
-                                <td>{{ $subscriber->email }}</td>
-                                <td width="15%" class="text-center">
-                                    <a href="{{ route('admin::subscribers.destroy', $subscriber) }}"
-                                       class="btn btn-danger btn-xs confirm-delete" data-id="{{ $subscriber->id }}">
-                                        <i class="fa fa-trash"></i> Delete
-                                    </a>
-                                </td>
+                                <th>Email</th>
+                                <th width="10%" class="text-center">Actions</th>
                             </tr>
-                        @endforeach
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
@@ -39,27 +30,7 @@
 
 @section('scripts')
     <script>
-        $(function () {
-            $('#datatable').DataTable({
-                responsive: true,
-
-                columns: [
-                    {
-                        data: 'email',
-                        name: 'email'
-                    },
-                    {
-                        data: 'actions',
-                        name: 'actions',
-                        searchable: false,
-                        sortable: false,
-                        width: '10%',
-                        className: 'text-center'
-                    }
-                ],
-
-                order: [[0, 'asc']]
-            })
-        });
+        var pagination_url = '{{ route('admin::subscribers.pagination') }}';
     </script>
+    <script src="{{ versionedAsset('assets/email/admin/js/subscribers_index.js') }}" type="text/javascript"></script>
 @endsection

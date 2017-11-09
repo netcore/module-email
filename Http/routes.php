@@ -23,4 +23,8 @@ Route::group([
     ]);
 
     Route::resource('subscribers', 'SubscriberController', ['only' => ['index', 'destroy']]);
+    Route::get('subscribers/pagination', [
+        'as'   => 'subscribers.pagination',
+        'uses' => 'SubscriberController@pagination'
+    ]);
 });
