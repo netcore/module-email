@@ -9,8 +9,18 @@ Route::group([
     Route::resource('automated_emails', 'AutomatedEmailController', ['only' => ['index', 'edit', 'update']]);
 
     Route::resource('campaigns', 'CampaignController', ['except' => ['show']]);
-    Route::post('campaigns/get-users', ['as' => 'campaigns.get-users', 'uses' => 'CampaignController@getUsers']);
-    Route::post('campaigns/search-users', ['as' => 'campaigns.search-users', 'uses' => 'CampaignController@searchUsers']);
+    Route::get('campaigns/get-users/{campaign}', [
+        'as'   => 'campaigns.get-users',
+        'uses' => 'CampaignController@getUsers'
+    ]);
+    Route::post('campaigns/search-users', [
+        'as'   => 'campaigns.search-users',
+        'uses' => 'CampaignController@searchUsers'
+    ]);
+    Route::delete('/campaigns/{campaign}/{user}/delete', [
+        'uses' => 'CampaignController@destroyUser',
+        'as'   => 'campaigns.destroy-user'
+    ]);
 
-    Route::post('subscribers', ['as' => 'subscribers.index', 'uses' => 'SubscriberController@index']);
+    Route::resource('subscribers', 'SubscriberController', ['only' => ['index', 'destroy']]);
 });

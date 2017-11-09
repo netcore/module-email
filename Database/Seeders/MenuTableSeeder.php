@@ -32,28 +32,31 @@ class MenuTableSeeder extends Seeder
                     'active_resolver' => 'admin::automated_emails.*,admin::campaigns.*,admin::subscribers.*',
                     'children'        => [
                         [
-                            'name'       => 'Automated emails',
-                            'type'       => 'route',
-                            'value'      => 'admin::automated_emails.index',
-                            'module'     => '',
-                            'is_active'  => 1,
-                            'parameters' => json_encode([])
+                            'name'            => 'Automated emails',
+                            'type'            => 'route',
+                            'value'           => 'admin::automated_emails.index',
+                            'module'          => '',
+                            'is_active'       => 1,
+                            'active_resolver' => 'admin::automated_emails.*',
+                            'parameters'      => json_encode([])
                         ],
                         [
-                            'name'       => 'Campaigns',
-                            'type'       => 'route',
-                            'value'      => 'admin::campaigns.index',
-                            'module'     => '',
-                            'is_active'  => 1,
-                            'parameters' => json_encode([])
+                            'name'            => 'Campaigns',
+                            'type'            => 'route',
+                            'value'           => 'admin::campaigns.index',
+                            'module'          => '',
+                            'is_active'       => 1,
+                            'active_resolver' => 'admin::campaigns.*',
+                            'parameters'      => json_encode([])
                         ],
                         [
-                            'name'       => 'Subscribers',
-                            'type'       => 'route',
-                            'value'      => 'admin::subscribers.index',
-                            'module'     => '',
-                            'is_active'  => 1,
-                            'parameters' => json_encode([])
+                            'name'            => 'Subscribers',
+                            'type'            => 'route',
+                            'value'           => 'admin::subscribers.index',
+                            'module'          => '',
+                            'is_active'       => 1,
+                            'active_resolver' => 'admin::subscribers.*',
+                            'parameters'      => json_encode([])
                         ],
                     ]
                 ],

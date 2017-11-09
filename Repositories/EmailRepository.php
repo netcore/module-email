@@ -25,9 +25,8 @@ class EmailRepository
             return false;
         }
 
-        Subscriber::create([
-            'user_id' => auth()->check() ? auth()->id() : null,
-            'email'   => $email
+        Subscriber::updateOrCreate(['email' => $email], [
+            'user_id' => auth()->check() ? auth()->id() : null
         ]);
 
         return true;

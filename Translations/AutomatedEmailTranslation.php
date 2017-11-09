@@ -9,7 +9,7 @@ class AutomatedEmailTranslation extends Model
     /**
      * @var string
      */
-    protected $table = 'netcore_form__automated_email_translations';
+    protected $table = 'netcore_email__automated_email_translations';
 
     /**
      * @var array

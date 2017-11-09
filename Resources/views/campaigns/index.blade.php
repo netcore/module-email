@@ -15,31 +15,37 @@
                     <h4 class="panel-title">Campaigns</h4>
                 </div>
                 <div class="panel-body">
-                    <table class="table table-bordered" id="datatable">
-                        <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th class="text-center">Actions</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        @foreach ($campaigns as $campaign)
+                    <div class="table-primary">
+                        <table class="table table-bordered" id="datatable">
+                            <thead>
                             <tr>
-                                <td>{{ $campaign->name }}</td>
-                                <td width="15%" class="text-center">
-                                    <a href="{{ route('admin::campaigns.edit', $campaign) }}"
-                                       class="btn btn-xs btn-warning">
-                                        <i class="fa fa-edit"></i> Edit
-                                    </a>
-                                    <a href="{{ route('admin::campaigns.destroy', $campaign) }}"
-                                       class="btn btn-danger btn-xs confirm-delete" data-id="{{ $campaign->id }}">
-                                        <i class="fa fa-trash"></i> Delete
-                                    </a>
-                                </td>
+                                <th>Name</th>
+                                <th class="text-center">Actions</th>
                             </tr>
-                        @endforeach
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                            @foreach ($campaigns as $campaign)
+                                <tr>
+                                    <td>
+                                        @foreach(\Netcore\Translator\Helpers\TransHelper::getAllLanguages() as $language)
+                                            <strong>{{ strtoupper($language->iso_code) }}:</strong> {{ trans_model($campaign, $language, 'name') }}<br>
+                                        @endforeach
+                                    </td>
+                                    <td width="15%" class="text-center">
+                                        <a href="{{ route('admin::campaigns.edit', $campaign) }}"
+                                           class="btn btn-xs btn-primary">
+                                            <i class="fa fa-edit"></i> Edit
+                                        </a>
+                                        <a href="{{ route('admin::campaigns.destroy', $campaign) }}"
+                                           class="btn btn-danger btn-xs confirm-delete" data-id="{{ $campaign->id }}">
+                                            <i class="fa fa-trash"></i> Delete
+                                        </a>
+                                    </td>
+                                </tr>
+                            @endforeach
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>

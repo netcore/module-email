@@ -10,31 +10,33 @@
                     <h4 class="panel-title">Automated emails</h4>
                 </div>
                 <div class="panel-body">
-                    <table class="table table-bordered" id="datatable">
-                        <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th class="text-center">Actions</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        @foreach ($automatedEmails as $automatedEmail)
+                    <div class="table-primary">
+                        <table class="table table-bordered" id="datatable">
+                            <thead>
                             <tr>
-                                <td>{{ $automatedEmail->name }}</td>
-                                <td width="15%" class="text-center">
-                                    <a href="{{ route('admin::automated_emails.edit', $automatedEmail) }}"
-                                       class="btn btn-xs btn-warning">
-                                        <i class="fa fa-edit"></i> Edit
-                                    </a>
-                                    <a href="{{ route('admin::automated_emails.destroy', $automatedEmail) }}"
-                                       class="btn btn-danger btn-xs confirm-delete" data-id="{{ $automatedEmail->id }}">
-                                        <i class="fa fa-trash"></i> Delete
-                                    </a>
-                                </td>
+                                <th>Name</th>
+                                <th class="text-center">Actions</th>
                             </tr>
-                        @endforeach
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                            @foreach ($automatedEmails as $automatedEmail)
+                                <tr>
+                                    <td>
+                                        @foreach(\Netcore\Translator\Helpers\TransHelper::getAllLanguages() as $language)
+                                            <strong>{{ strtoupper($language->iso_code) }}:</strong> {{ trans_model($automatedEmail, $language, 'name') }}<br>
+                                        @endforeach
+                                    </td>
+                                    <td width="15%" class="text-center">
+                                        <a href="{{ route('admin::automated_emails.edit', $automatedEmail) }}"
+                                           class="btn btn-xs btn-primary">
+                                            <i class="fa fa-edit"></i> Edit
+                                        </a>
+                                    </td>
+                                </tr>
+                            @endforeach
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>

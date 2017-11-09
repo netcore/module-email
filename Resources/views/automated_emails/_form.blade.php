@@ -9,14 +9,14 @@
             <div class="form-group{{ $errors->has('translations.' . $language->iso_code . '.name') ? ' has-error' : '' }}">
                 <label class="col-md-2 control-label">Name</label>
                 <div class="col-md-8">
-                    {!! Form::text('translations['.$language->iso_code.'][value]', trans_model(isset($automatedEmail) ? $automatedEmail : null, $language, 'name'), ['class' => 'form-control']) !!}
+                    {!! Form::text('translations['.$language->iso_code.'][name]', trans_model(isset($automatedEmail) ? $automatedEmail : null, $language, 'name'), ['class' => 'form-control']) !!}
                 </div>
             </div>
 
             <div class="form-group{{ $errors->has('translations.' . $language->iso_code . '.text') ? ' has-error' : '' }}">
                 <label class="col-md-2 control-label">Text</label>
                 <div class="col-md-8">
-                    {!! Form::textarea('translations['.$language->iso_code.'][value]', trans_model(isset($automatedEmail) ? $automatedEmail : null, $language, 'name'), ['class' => 'form-control']) !!}
+                    {!! Form::textarea('translations['.$language->iso_code.'][text]', trans_model(isset($automatedEmail) ? $automatedEmail : null, $language, 'text'), ['class' => 'form-control']) !!}
                 </div>
             </div>
         </div>

@@ -9,7 +9,7 @@ class CampaignTranslation extends Model
     /**
      * @var string
      */
-    protected $table = 'netcore_form__campaign_translations';
+    protected $table = 'netcore_email__campaign_translations';
 
     /**
      * @var array

@@ -2,6 +2,7 @@
 
 namespace Modules\Email\Models;
 
+use App\Models\User;
 use Dimsav\Translatable\Translatable;
 use Illuminate\Database\Eloquent\Model;
 use Modules\Admin\Traits\SyncTranslations;
@@ -58,10 +59,12 @@ class Campaign extends Model
      */
     public function users()
     {
-        return $this->belongsToMany(User::class, 'email_campaign_user')->withPivot([
-            'is_sent',
-            'sent_at'
-        ])->withTimestamps();
+        return $this->belongsToMany(User::class, 'netcore_email__campaign_user')
+                ->using(CampaignPivot::class)
+                ->withPivot([
+                    'is_sent',
+                    'sent_at'
+                ])->withTimestamps();
     }
 
     /**

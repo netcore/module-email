@@ -1,0 +1,1 @@
+{{ $user->pivot->is_sent ? 'Yes' : 'No' }}

@@ -2,6 +2,7 @@
 
 namespace Modules\Email\Http\Controllers\Admin;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
@@ -95,13 +96,62 @@ class CampaignController extends Controller
         return back()->withSuccess('Successfully deleted');
     }
 
-    public function getUsers()
+    /**
+     * @param Campaign      $campaign
+     * @param               $user
+     * @return bool
+     */
+    public function destroyUser(Campaign $campaign, $user)
     {
+        $campaign->users()->detach($user);
 
+        return response()->json([
+            'state' => 'success'
+        ]);
     }
 
-    public function searchUsers()
+    /**
+     * @param Request $request
+     * @return mixed
+     */
+    public function searchUsers(Request $request)
     {
+        //
+    }
 
+    /**
+     * @param Campaign $campaign
+     * @return mixed
+     */
+    public function getUsers(Campaign $campaign)
+    {
+        return datatables()->collection($campaign->users)->addColumn('sent', function ($user) {
+            return view('email::campaigns.tds.sent', compact('user'))->render();
+        })->addColumn('actions', function ($user) use ($campaign) {
+            return view('email::campaigns.tds.actions', compact('campaign', 'user'))->render();
+        })->rawColumns(['actions'])
+            ->make(true);
+    }
+
+    /**
+     * @param Campaign $campaign
+     * @return mixed
+     */
+    public function start(Campaign $campaign)
+    {
+        $campaign->start();
+
+        return back()->withSuccess('Campaign started!');
+    }
+
+    /**
+     * @param Campaign $campaign
+     * @return mixed
+     */
+    public function stop(Campaign $campaign)
+    {
+        $campaign->stop();
+
+        return back()->withSuccess('Campaign stopped!');
     }
 }

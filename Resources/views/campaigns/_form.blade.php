@@ -9,14 +9,14 @@
             <div class="form-group{{ $errors->has('translations.' . $language->iso_code . '.name') ? ' has-error' : '' }}">
                 <label class="col-md-2 control-label">Name</label>
                 <div class="col-md-8">
-                    {!! Form::text('translations['.$language->iso_code.'][value]', trans_model(isset($campaign) ? $campaign : null, $language, 'name'), ['class' => 'form-control']) !!}
+                    {!! Form::text('translations['.$language->iso_code.'][name]', trans_model(isset($campaign) ? $campaign : null, $language, 'name'), ['class' => 'form-control']) !!}
                 </div>
             </div>
 
             <div class="form-group{{ $errors->has('translations.' . $language->iso_code . '.text') ? ' has-error' : '' }}">
                 <label class="col-md-2 control-label">Text</label>
                 <div class="col-md-8">
-                    {!! Form::textarea('translations['.$language->iso_code.'][value]', trans_model(isset($campaign) ? $campaign : null, $language, 'name'), ['class' => 'form-control']) !!}
+                    {!! Form::textarea('translations['.$language->iso_code.'][text]', trans_model(isset($campaign) ? $campaign : null, $language, 'text'), ['class' => 'form-control']) !!}
                 </div>
             </div>
         </div>
@@ -31,19 +31,21 @@
                     <i class="fa fa-users"></i> Campaign users
                 </div>
                 <div class="panel-body">
-                    <table class="table datatable">
-                        <thead>
-                        <tr>
-                            <th width="50%">Name / Surname</th>
-                            <th width="25%">Email</th>
-                            <th width="15%">Phone</th>
-                            <th width="10%">Sent?</th>
-                            <th width="10%">Actions</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        </tbody>
-                    </table>
+                    <div class="table-primary">
+                        <table class="table datatable">
+                            <thead>
+                            <tr>
+                                <th>Name / Surname</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>Sent?</th>
+                                <th width="10%">Actions</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>
@@ -119,18 +121,20 @@
             </div>
             <div class="panel-body">
                 <div class="form-group">
-                    <table class="table search">
-                        <thead>
-                        <tr>
-                            <th width="1%"></th>
-                            <th width="50%">Name / Surname</th>
-                            <th width="25%">Email</th>
-                            <th width="25%">Phone</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        </tbody>
-                    </table>
+                    <div class="table-primary">
+                        <table class="table search">
+                            <thead>
+                            <tr>
+                                <th width="1%"></th>
+                                <th width="50%">Name / Surname</th>
+                                <th width="25%">Email</th>
+                                <th width="25%">Phone</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
                 <input type="hidden" name="users" class="users"/>
             </div>
@@ -148,5 +152,5 @@
         var search_url = '{{ route('admin::campaigns.search-users') }}';
         var users_url = '{{ isset($campaign) ? route('admin::campaigns.get-users', $campaign) : '' }}';
     </script>
-    <script src="{{ asset('assets/admin/javascripts/campaigns_form.js') }}"></script>
+    <script src="{{ asset('assets/email/admin/js/campaign.js') }}"></script>
 @endsection
