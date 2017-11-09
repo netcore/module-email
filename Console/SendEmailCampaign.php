@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Email\Console\Commands;
+namespace Modules\Email\Console;
 
 use Modules\Email\Emails\CampaignEmail;
 use Modules\Email\Models\Campaign;

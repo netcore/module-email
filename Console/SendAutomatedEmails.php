@@ -1,10 +1,9 @@
 <?php
 
-namespace Modules\Email\Console\Commands;
+namespace Modules\Email\Console;
 
 use Modules\Email\Emails\AutomatedEmails;
 use Modules\Email\Models\AutomatedEmail;
-use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Mail;

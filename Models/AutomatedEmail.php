@@ -2,6 +2,7 @@
 
 namespace Modules\Email\Models;
 
+use Carbon\Carbon;
 use Dimsav\Translatable\Translatable;
 use Illuminate\Database\Eloquent\Model;
 use Modules\Admin\Traits\SyncTranslations;
@@ -26,11 +27,6 @@ class AutomatedEmail extends Model
         'last_sent_at',
         'last_user_id'
     ];
-
-    /**
-     * @var bool
-     */
-    public $timestamps = false;
 
     /**
      * @var array

@@ -25,6 +25,7 @@ class EmailServiceProvider extends ServiceProvider
         $this->registerTranslations();
         $this->registerConfig();
         $this->registerViews();
+        $this->registerCommands();
         $this->loadMigrationsFrom(__DIR__ . '/../Database/Migrations');
     }
 
@@ -87,6 +88,19 @@ class EmailServiceProvider extends ServiceProvider
         } else {
             $this->loadTranslationsFrom(__DIR__ . '/../Resources/lang', 'email');
         }
+    }
+
+    /**
+     * Register commands.
+     *
+     * @return void
+     */
+    public function registerCommands()
+    {
+        $this->commands([
+            \Modules\Email\Console\SendAutomatedEmails::class,
+            \Modules\Email\Console\SendEmailCampaign::class,
+        ]);
     }
 
     /**

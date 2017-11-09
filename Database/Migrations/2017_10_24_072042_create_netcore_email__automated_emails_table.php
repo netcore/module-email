@@ -23,6 +23,7 @@ class CreateNetcoreEmailAutomatedEmailsTable extends Migration
             $table->boolean('is_active')->default(0);
 
             $table->timestamp('last_sent_at')->nullable();
+            $table->timestamps();
         });
 
         Schema::create('netcore_email__automated_email_translations', function (Blueprint $table) {
