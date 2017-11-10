@@ -1,4 +1,4 @@
-@extends('email::emails.layout', [
+@extends($config['layout'], [
     'title' => $automatedEmail->name
 ])
 

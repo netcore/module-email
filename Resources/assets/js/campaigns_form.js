@@ -1,12 +1,11 @@
 var users = $('.users');
 var userIds = [];
 
-$('.search').DataTable();
-/*$(".datetimepicker").datetimepicker({
-    format: 'yyyy-mm-dd hh:ii',
-    autoclose: true,
-    fontAwesome: true
-});*/
+$('.search').DataTable({
+    'columnDefs' : {
+        orderable: false, targets: 0
+    }
+});
 
 $('.search-users').on('click', function (e) {
     e.preventDefault();
@@ -37,14 +36,11 @@ function populateDataTable(data) {
                 'data': function (row, type, val, meta) {
                     return '<input type=checkbox name=found[] value=' + row.id + ' class=checkbox checked>';
                 },
-                searchable: false,
-                sortable: false
+                orderable: false
             },
             {'data': 'full_name'},
-            {'data': 'email'},
-            {'data': 'phone'}
-        ],
-        'order': [[1, 'asc']]
+            {'data': 'email'}
+        ]
     });
 
     for (var i = 0; i < Object.keys(data).length; i++) {
@@ -81,7 +77,6 @@ if (users_url) {
         columns: [
             {data: 'full_name', name: 'full_name'},
             {data: 'email', name: 'email'},
-            {data: 'phone', name: 'phone'},
             {data: 'sent', name: 'pivot.is_sent'},
             {
                 data: 'actions',

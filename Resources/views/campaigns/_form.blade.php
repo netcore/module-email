@@ -32,12 +32,11 @@
                 </div>
                 <div class="panel-body">
                     <div class="table-primary">
-                        <table class="table datatable">
+                        <table class="table table-bordered datatable">
                             <thead>
                             <tr>
                                 <th>Name / Surname</th>
                                 <th>Email</th>
-                                <th>Phone</th>
                                 <th>Sent?</th>
                                 <th width="10%">Actions</th>
                             </tr>
@@ -122,13 +121,12 @@
             <div class="panel-body">
                 <div class="form-group">
                     <div class="table-primary">
-                        <table class="table search">
+                        <table class="table table-bordered search">
                             <thead>
                             <tr>
-                                <th width="1%"></th>
+                                <th width="2%">#</th>
                                 <th width="50%">Name / Surname</th>
                                 <th width="25%">Email</th>
-                                <th width="25%">Phone</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -143,14 +141,12 @@
 </div>
 
 @section('styles')
-    <link href="{{ asset('assets/admin/stylesheets/bootstrap-datetimepicker.css') }}" rel="stylesheet"/>
 @endsection
 
 @section('scripts')
-    <script src="{{ asset('assets/admin/javascripts/bootstrap-datetimepicker.min.js') }}"></script>
     <script>
         var search_url = '{{ route('admin::campaigns.search-users') }}';
         var users_url = '{{ isset($campaign) ? route('admin::campaigns.get-users', $campaign) : '' }}';
     </script>
-    <script src="{{ asset('assets/email/admin/js/campaign.js') }}"></script>
+    <script src="{{ versionedAsset('assets/email/admin/js/campaigns_form.js') }}"></script>
 @endsection

@@ -1,5 +1,6 @@
 <?php
 
 return [
-    'name' => 'Email'
+    // Emails layout
+    'layout' => 'emails.layout' // resources/views/emails/layout.blade.php
 ];

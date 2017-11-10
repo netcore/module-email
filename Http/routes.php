@@ -9,6 +9,14 @@ Route::group([
     Route::resource('automated_emails', 'AutomatedEmailController', ['only' => ['index', 'edit', 'update']]);
 
     Route::resource('campaigns', 'CampaignController', ['except' => ['show']]);
+    Route::get('/campaigns/{campaign}/start', [
+        'uses' => 'CampaignController@start',
+        'as'   => 'campaigns.start'
+    ]);
+    Route::get('/campaigns/{campaign}/stop', [
+        'uses' => 'CampaignController@stop',
+        'as'   => 'campaigns.stop'
+    ]);
     Route::get('campaigns/get-users/{campaign}', [
         'as'   => 'campaigns.get-users',
         'uses' => 'CampaignController@getUsers'

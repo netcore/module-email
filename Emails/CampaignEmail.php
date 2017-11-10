@@ -2,7 +2,7 @@
 
 namespace Modules\Email\Emails;
 
-use Modules\Email\Models\EmailCampaign;
+use Modules\Email\Models\Campaign;
 use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
@@ -24,15 +24,21 @@ class CampaignEmail extends Mailable
     public $user;
 
     /**
+     * @var \Illuminate\Config\Repository|mixed
+     */
+    public $config;
+
+    /**
      * Create a new message instance.
      *
      * @param EmailCampaign $campaign
      * @param User          $user
      */
-    public function __construct(EmailCampaign $campaign, User $user)
+    public function __construct(Campaign $campaign, User $user)
     {
         $this->campaign = $campaign;
         $this->user = $user;
+        $this->config = config('netcore.module-email');
     }
 
     /**
@@ -42,6 +48,6 @@ class CampaignEmail extends Mailable
      */
     public function build()
     {
-        return $this->view('emails.campaign-email')->subject($this->campaign->name);
+        return $this->view('email::emails.campaign-email')->subject($this->campaign->name);
     }
 }

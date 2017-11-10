@@ -24,6 +24,11 @@ class AutomatedEmails extends Mailable
     public $user;
 
     /**
+     * @var \Illuminate\Config\Repository|mixed
+     */
+    public $config;
+
+    /**
      * Create a new message instance.
      *
      * @param AutomatedEmail $automatedEmail
@@ -33,6 +38,7 @@ class AutomatedEmails extends Mailable
     {
         $this->automatedEmail = $automatedEmail;
         $this->user = $user;
+        $this->config = config('netcore.module-email');
     }
 
     /**
@@ -42,6 +48,6 @@ class AutomatedEmails extends Mailable
      */
     public function build()
     {
-        return $this->view('emails.automated-email')->subject($this->automatedEmail->title);
+        return $this->view('email::emails.automated-email')->subject($this->automatedEmail->name);
     }
 }

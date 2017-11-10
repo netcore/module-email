@@ -127,12 +127,12 @@ class Campaign extends Model
     }
 
     /**
-     *  Stop email campaign
+     * Stop email campaign
      *
-     * @param null   $userId
      * @param string $status
+     * @param null   $userId
      */
-    public function stop($userId = null, $status = 'stopped')
+    public function stop($status = 'stopped', $userId = null)
     {
         if ($this->lockFileExists()) {
             unlink($this->lockFile());

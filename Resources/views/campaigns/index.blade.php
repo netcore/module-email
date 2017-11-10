@@ -32,6 +32,14 @@
                                         @endforeach
                                     </td>
                                     <td width="15%" class="text-center">
+                                        @if ($campaign->inProgress())
+                                            <a href="{{ route('admin::campaigns.stop', $campaign) }}"
+                                               class="btn btn-warning btn-xs"><i class="fa fa-stop"></i> Stop</a>
+                                        @endif
+                                        @if ($campaign->isStopped() || $campaign->notStarted())
+                                            <a href="{{ route('admin::campaigns.start', $campaign) }}"
+                                               class="btn btn-success btn-xs"><i class="fa fa-play"></i> {{ $campaign->notStarted() ? 'Start' : 'Resume' }}</a>
+                                        @endif
                                         <a href="{{ route('admin::campaigns.edit', $campaign) }}"
                                            class="btn btn-xs btn-primary">
                                             <i class="fa fa-edit"></i> Edit

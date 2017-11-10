@@ -43,7 +43,8 @@ class SendEmailCampaign extends Command
         $campaign = Campaign::find($campaignId);
 
         if (!$campaign) {
-            return;
+            $this->error('[Campaigns] Campaign not found');
+            exit;
         }
 
         $lastUserId = null;
@@ -51,7 +52,7 @@ class SendEmailCampaign extends Command
 
             // Check for lock file
             if (!$campaign->lockFileExists()) {
-                $campaign->stop($lastUserId);
+                $campaign->stop('stopped', $lastUserId);
                 exit;
             }
 
@@ -68,8 +69,9 @@ class SendEmailCampaign extends Command
                 ]);
 
             } catch (\Exception $e) {
-                $campaign->stop($lastUserId, 'error');
-                \Log::info($e->getMessage());
+                $campaign->stop('error', $lastUserId);
+                \Log::error($e->getMessage());
+                $this->error('[Campaigns] ' . $e->getMessage());
                 exit;
             }
 
@@ -80,6 +82,6 @@ class SendEmailCampaign extends Command
             ]);
         }
 
-        $campaign->stop($lastUserId, 'sent');
+        $campaign->stop('sent');
     }
 }
