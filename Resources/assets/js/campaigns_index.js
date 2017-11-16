@@ -3,6 +3,7 @@ $('.datatable').DataTable({
 	order: [[0, 'asc']],
 	columns: [
 		{data: 'name', name: 'name'},
+        {data: 'status', name: 'status'},
 		{
 			data: 'actions',
 			name: 'actions',

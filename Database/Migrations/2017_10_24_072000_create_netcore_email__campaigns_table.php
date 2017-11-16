@@ -16,7 +16,7 @@ class CreateNetcoreEmailCampaignsTable extends Migration
         Schema::create('netcore_email__campaigns', function (Blueprint $table) {
             $table->increments('id');
 
-            $table->unsignedInteger('last_user_id')->nullable();
+            $table->string('last_email')->nullable();
             $table->enum('status', ['not_sent', 'sending', 'sent', 'stopped', 'error'])->default('not_sent');
 
             $table->timestamps();

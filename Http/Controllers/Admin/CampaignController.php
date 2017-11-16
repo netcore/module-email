@@ -8,6 +8,7 @@ use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
 use Modules\Email\Http\Requests\Admin\CampaignRequest;
 use Modules\Email\Models\Campaign;
+use Modules\Email\Models\CampaignReceiver;
 
 class CampaignController extends Controller
 {
@@ -35,7 +36,7 @@ class CampaignController extends Controller
      */
     public function create()
     {
-        $filters = [];
+        $filters = email()->getFilters();
 
         return view($this->viewNamespace . '.create', compact('filters'));
     }
@@ -46,10 +47,23 @@ class CampaignController extends Controller
      * @param  CampaignRequest $request
      * @return Response
      */
-    public function store(CampaignRequest $request)
+    public function store(Request $request)
     {
-        $campaign = Campaign::create($request->all());
+        $campaign = Campaign::create([]);
         $campaign->storeTranslations($request->get('translations', []));
+
+        // Store receivers
+        $except = json_decode($request->get('except', []));
+        $receivers = email()->searchQuery()->get();
+        $receivers = $receivers->reject(function ($receiver) use ($except) {
+            return in_array($receiver->email, $except);
+        });
+        $receivers->each(function ($receiver) use ($campaign) {
+            $campaign->receivers()->create([
+                'user_id' => $receiver->id,
+                'email'   => $receiver->email
+            ]);
+        });
 
         return redirect()->route('admin::campaigns.index')->withSuccess('Successfully created');
     }
@@ -62,7 +76,7 @@ class CampaignController extends Controller
      */
     public function edit(Campaign $campaign)
     {
-        $filters = [];
+        $filters = email()->getFilters();
 
         return view($this->viewNamespace . '.edit', compact('campaign', 'filters'));
     }
@@ -76,8 +90,22 @@ class CampaignController extends Controller
      */
     public function update(CampaignRequest $request, Campaign $campaign)
     {
-        $campaign->update($request->all());
         $campaign->updateTranslations($request->get('translations', []));
+
+        // Store receivers
+        $except = json_decode($request->get('except', []));
+        $receivers = email()->searchQuery()->get();
+        $receivers = $receivers->reject(function ($receiver) use ($except) {
+            return in_array($receiver->email, $except);
+        });
+        $receivers->each(function ($receiver) use ($campaign) {
+            $campaign->receivers()->firstOrCreate([
+                'email' => $receiver->email
+            ], [
+                'user_id' => $receiver->id,
+                'email'   => $receiver->email
+            ]);
+        });
 
         return back()->withSuccess('Successfully saved');
     }
@@ -92,23 +120,29 @@ class CampaignController extends Controller
     {
         $campaign->delete();
 
-        if (request()->ajax()) {
-            return response()->json([
-                'state' => 'success'
-            ]);
-        }
-
-        return back()->withSuccess('Successfully deleted');
+        return response()->json([
+            'state' => 'success'
+        ]);
     }
 
     /**
-     * @param Campaign      $campaign
-     * @param               $user
-     * @return bool
+     * Remove receiver from campaign
+     *
+     * @param Campaign         $campaign
+     * @param CampaignReceiver $receiver
+     * @return \Illuminate\Http\JsonResponse
      */
-    public function destroyUser(Campaign $campaign, $user)
+    public function destroyReceiver(Campaign $campaign, CampaignReceiver $receiver)
     {
-        $campaign->users()->detach($user);
+        $receiver = $campaign->receivers()->find($receiver);
+
+        if (!$receiver) {
+            return response()->json([
+                'message' => 'Receiver not found!'
+            ], 422);
+        }
+
+        $receiver->delete();
 
         return response()->json([
             'state' => 'success'
@@ -116,28 +150,8 @@ class CampaignController extends Controller
     }
 
     /**
-     * @param Request $request
-     * @return mixed
-     */
-    public function searchUsers(Request $request)
-    {
-        //
-    }
-
-    /**
-     * @param Campaign $campaign
-     * @return mixed
-     */
-    public function getUsers(Campaign $campaign)
-    {
-        return datatables()->collection($campaign->users)->addColumn('sent', function ($user) {
-            return view('email::campaigns.tds.sent', compact('user'))->render();
-        })->addColumn('actions', function ($user) use ($campaign) {
-            return view('email::campaigns.tds.actions', compact('campaign', 'user'))->render();
-        })->rawColumns(['actions'])->make(true);
-    }
-
-    /**
+     * Start the campaign
+     *
      * @param Campaign $campaign
      * @return mixed
      */
@@ -149,6 +163,8 @@ class CampaignController extends Controller
     }
 
     /**
+     * Stop the campaign
+     *
      * @param Campaign $campaign
      * @return mixed
      */
@@ -157,5 +173,35 @@ class CampaignController extends Controller
         $campaign->stop();
 
         return back()->withSuccess('Campaign stopped!');
+    }
+
+    /**
+     * Search users based on filters
+     *
+     * @param Request $request
+     * @return mixed
+     */
+    public function searchReceivers()
+    {
+        return email()->searchReceivers();
+    }
+
+    /**
+     * Get campaign receivers
+     *
+     * @param Campaign $campaign
+     * @return mixed
+     */
+    public function getReceivers(Campaign $campaign)
+    {
+        // TODO: dont use collection
+        $campaign->receivers->load('user');
+        return datatables()->of($campaign->receivers)->addColumn('user', function ($receiver) {
+            return view('email::campaigns.tds.user', compact('receiver'))->render();
+        })->addColumn('sent', function ($receiver) {
+            return view('email::campaigns.tds.sent', compact('receiver'))->render();
+        })->addColumn('actions', function ($receiver) use ($campaign) {
+            return view('email::campaigns.tds.actions', compact('campaign', 'receiver'))->render();
+        })->rawColumns(['actions'])->make(true);
     }
 }

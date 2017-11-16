@@ -44,8 +44,8 @@ class AutomatedEmailRequest extends FormRequest
         $messages = [];
 
         foreach (TransHelper::getAllLanguages() as $language) {
-            $messages['translations.' . $language->iso_code . '.name.required'] = 'Name (' . strtoupper($language->iso_code) . ') is required';
-            $messages['translations.' . $language->iso_code . '.text.required'] = 'Text (' . strtoupper($language->iso_code) . ') is required';
+            $messages['translations.' . $language->iso_code . '.name.required'] = 'Name (' . $language->title_localized . ') is required';
+            $messages['translations.' . $language->iso_code . '.text.required'] = 'Text (' . $language->title_localized . ') is required';
         }
 
         return $messages;

@@ -29,7 +29,7 @@ installed:
 
  - Add automated emails command to scheduling in "app/Console/Kernel.php"
 ```
-    $schedule->command('automated-emails:send')->hourly();
+    $schedule->command('automated-emails:send')->everyMinute();
 ```
  
 ### Configuration

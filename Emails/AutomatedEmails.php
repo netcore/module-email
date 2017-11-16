@@ -2,12 +2,10 @@
 
 namespace Modules\Email\Emails;
 
-use Modules\Email\Models\AutomatedEmail;
-use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Contracts\Queue\ShouldQueue;
+use Modules\Email\Models\AutomatedEmail;
 
 class AutomatedEmails extends Mailable
 {
@@ -24,6 +22,11 @@ class AutomatedEmails extends Mailable
     public $user;
 
     /**
+     * @var User
+     */
+    public $secondUser;
+
+    /**
      * @var \Illuminate\Config\Repository|mixed
      */
     public $config;
@@ -32,12 +35,14 @@ class AutomatedEmails extends Mailable
      * Create a new message instance.
      *
      * @param AutomatedEmail $automatedEmail
-     * @param User           $user
+     * @param                $user
+     * @param null           $secondUser
      */
-    public function __construct(AutomatedEmail $automatedEmail, User $user)
+    public function __construct(AutomatedEmail $automatedEmail, $user, $secondUser = null)
     {
         $this->automatedEmail = $automatedEmail;
         $this->user = $user;
+        $this->secondUser = $secondUser;
         $this->config = config('netcore.module-email');
     }
 
@@ -48,6 +53,8 @@ class AutomatedEmails extends Mailable
      */
     public function build()
     {
-        return $this->view('email::emails.automated-email')->subject($this->automatedEmail->name);
+        $template = $this->config['automated_emails_template'] ?: 'email::emails.automated-email';
+
+        return $this->view($template)->subject($this->automatedEmail->name);
     }
 }

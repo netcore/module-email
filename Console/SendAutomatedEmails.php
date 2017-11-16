@@ -39,28 +39,47 @@ class SendAutomatedEmails extends Command
      */
     public function handle()
     {
-        $emails = AutomatedEmail::active()->get();
-        foreach ($emails as $email) {
+        foreach (AutomatedEmail::period()->active()->get() as $email) {
             if (!$email->checkPeriod()) {
                 continue;
             }
 
             foreach ($email->getUsers() as $user) {
-                if (!filter_var($user->email, FILTER_VALIDATE_EMAIL)) {
-                    continue;
+                try {
+                    $email->sendTo($user);
+                    $email->update([
+                        'last_user_id' => $user->id
+                    ]);
+                } catch (\Exception $e) {
+                    $email->logs()->create([
+                        'email'   => $user->email,
+                        'type'    => 'error',
+                        'message' => $e->getMessage()
+                    ]);
                 }
-
-                Mail::to($user)->send(new AutomatedEmails($email, $user));
-
-                $email->update([
-                    'last_user_id' => $user->id
-                ]);
             }
 
             $email->update([
-                'last_sent_at' => Carbon::now()->startOfDay()->addHour(),
+                'last_sent_at' => Carbon::now(),
                 'last_user_id' => null
             ]);
+        }
+
+        foreach (AutomatedEmail::static()->active()->get() as $email) {
+            $email->jobs->each(function ($job) use ($email) {
+                if ($job->timeToSend()) {
+                    try {
+                        $email->sendTo($job->user, $job->otherUser);
+                        $job->delete();
+                    } catch (\Exception $e) {
+                        $email->logs()->create([
+                            'email'   => $user->email,
+                            'type'    => 'error',
+                            'message' => $e->getMessage()
+                        ]);
+                    }
+                }
+            });
         }
     }
 }

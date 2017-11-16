@@ -15,7 +15,7 @@
                             <thead>
                             <tr>
                                 <th>Email</th>
-                                <th width="10%" class="text-center">Actions</th>
+                                <th width="15%" class="text-center">Actions</th>
                             </tr>
                             </thead>
                             <tbody>

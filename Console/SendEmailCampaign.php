@@ -47,38 +47,35 @@ class SendEmailCampaign extends Command
             exit;
         }
 
-        $lastUserId = null;
-        foreach ($campaign->users()->wherePivot('is_sent', '0')->get() as $user) {
+        $lastEmail = null;
+        foreach ($campaign->receivers()->notSent()->get() as $receiver) {
 
             // Check for lock file
             if (!$campaign->lockFileExists()) {
-                $campaign->stop('stopped', $lastUserId);
+                $campaign->stop('stopped', $lastEmail);
                 exit;
-            }
-
-            if (!filter_var($user->email, FILTER_VALIDATE_EMAIL)) {
-                continue;
             }
 
             try {
-                Mail::to($user)->send(new CampaignEmail($campaign, $user));
-
-                $campaign->users()->updateExistingPivot($user->id, [
+                $campaign->sendTo($receiver);
+                $receiver->update([
                     'is_sent' => '1',
                     'sent_at' => Carbon::now()
                 ]);
-
             } catch (\Exception $e) {
-                $campaign->stop('error', $lastUserId);
-                \Log::error($e->getMessage());
-                $this->error('[Campaigns] ' . $e->getMessage());
+                $campaign->stop('error', $lastEmail);
+                $campaign->logs()->create([
+                    'email'   => $receiver->email,
+                    'type'    => 'error',
+                    'message' => $e->getMessage()
+                ]);
                 exit;
             }
 
-            $lastUserId = $user->id;
+            $lastEmail = $receiver->email;
 
             $campaign->update([
-                'last_user_id' => $lastUserId
+                'last_email' => $lastEmail
             ]);
         }
 

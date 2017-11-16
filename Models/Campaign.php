@@ -2,10 +2,13 @@
 
 namespace Modules\Email\Models;
 
-use App\Models\User;
 use Dimsav\Translatable\Translatable;
 use Illuminate\Database\Eloquent\Model;
-use Modules\Admin\Traits\SyncTranslations;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Support\Facades\Mail;
+use Modules\Translate\Traits\SyncTranslations;
+use Modules\Email\Emails\CampaignEmail;
 use Modules\Email\Translations\CampaignTranslation;
 
 class Campaign extends Model
@@ -33,7 +36,7 @@ class Campaign extends Model
      */
     protected $fillable = [
         'status',
-        'last_user_id'
+        'last_email'
     ];
 
     /**
@@ -54,65 +57,98 @@ class Campaign extends Model
      */
     protected $with = ['translations'];
 
+    /* ---------------- Relations -------------------- */
+
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function users()
+    public function receivers(): HasMany
     {
-        return $this->belongsToMany(User::class, 'netcore_email__campaign_user')
-                ->using(CampaignPivot::class)
-                ->withPivot([
-                    'is_sent',
-                    'sent_at'
-                ])->withTimestamps();
+        return $this->hasMany(CampaignReceiver::class);
     }
 
     /**
-     * @return mixed
+     * @return \Illuminate\Database\Eloquent\Relations\MorphMany
      */
-    public function getStatus()
+    public function logs(): MorphMany
     {
-        return self::STATUSES[$this->status];
+        return $this->morphMany(EmailLog::class, 'loggable');
     }
 
-    /* ------- Statuses -----------*/
+    /* ---------------- Other methods -------------------- */
 
     /**
+     * Get readable status
+     *
+     * @return string
+     */
+    public function getStatus(): string
+    {
+        return array_get(self::STATUSES, $this->status, 'Unknown');
+    }
+
+    /**
+     * Campaign has not yet sent
+     *
      * @return bool
      */
-    public function notStarted()
+    public function notStarted(): bool
     {
         return $this->status == 'not_sent';
     }
 
     /**
+     * Campaign has been sent
+     *
      * @return bool
      */
-    public function isDone()
+    public function isDone(): bool
     {
         return $this->status == 'sent';
     }
 
     /**
+     * Campaign in progress
+     *
      * @return bool
      */
-    public function inProgress()
+    public function inProgress(): bool
     {
         return $this->status == 'sending';
     }
 
     /**
+     * Campaign stopped
+     *
      * @return bool
      */
-    public function isStopped()
+    public function isStopped(): bool
     {
         return in_array($this->status, ['stopped', 'error']);
     }
 
     /**
-     *  Start email campaign
+     * Send email
+     *
+     * @param CampaignReceiver $receiver
+     * @return void
      */
-    public function start()
+    public function sendTo(CampaignReceiver $receiver): void
+    {
+        Mail::to($receiver->email)->send(new CampaignEmail($this, $receiver->user));
+
+        $this->logs()->create([
+            'email' => $receiver->email,
+            'type'  => 'success'
+        ]);
+    }
+
+    /**
+     *  Start email campaign
+     *
+     * @return void
+     */
+    public function start(): void
     {
         file_put_contents($this->lockFile(), time());
 
@@ -130,31 +166,36 @@ class Campaign extends Model
      * Stop email campaign
      *
      * @param string $status
-     * @param null   $userId
+     * @param null   $email
+     * @return void
      */
-    public function stop($status = 'stopped', $userId = null)
+    public function stop($status = 'stopped', $email = null): void
     {
         if ($this->lockFileExists()) {
             unlink($this->lockFile());
         }
 
         $this->status = $this->isDone() ? 'sent' : $status;
-        $this->last_user_id = $userId ?: $this->last_user_id;
+        $this->last_email = ($status !== 'sent') ? ($email ?: $this->last_email) : null;
         $this->save();
     }
 
     /**
+     * Check if lock file exists
+     *
      * @return bool
      */
-    public function lockFileExists()
+    public function lockFileExists(): bool
     {
         return file_exists($this->lockFile());
     }
 
     /**
+     * Lock file path
+     *
      * @return string
      */
-    private function lockFile()
+    private function lockFile(): string
     {
         return storage_path('lock_files/.email-campaign-in-progress-' . $this->id . '.lock');
     }

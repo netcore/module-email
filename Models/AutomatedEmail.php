@@ -5,7 +5,12 @@ namespace Modules\Email\Models;
 use Carbon\Carbon;
 use Dimsav\Translatable\Translatable;
 use Illuminate\Database\Eloquent\Model;
-use Modules\Admin\Traits\SyncTranslations;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Support\Facades\Mail;
+use Modules\Translate\Traits\SyncTranslations;
+use Modules\Email\Emails\AutomatedEmails;
+use Modules\Email\Entities\AutomatedEmailJob;
 use Modules\Email\Translations\AutomatedEmailTranslation;
 
 class AutomatedEmail extends Model
@@ -23,6 +28,7 @@ class AutomatedEmail extends Model
     protected $fillable = [
         'key',
         'period',
+        'type',
         'is_active',
         'last_sent_at',
         'last_user_id'
@@ -51,6 +57,26 @@ class AutomatedEmail extends Model
      */
     protected $with = ['translations'];
 
+    /* ---------------- Relations -------------------- */
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function jobs(): HasMany
+    {
+        return $this->hasMany(AutomatedEmailJob::class);
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\MorphMany
+     */
+    public function logs(): MorphMany
+    {
+        return $this->morphMany(EmailLog::class, 'loggable');
+    }
+
+    /* ---------------- Query scopes -------------------- */
+
     /**
      * @param $query
      * @return mixed
@@ -61,6 +87,42 @@ class AutomatedEmail extends Model
     }
 
     /**
+     * @param $query
+     * @return mixed
+     */
+    public function scopePeriod($query)
+    {
+        return $query->where('type', 'period');
+    }
+
+    /**
+     * @param $query
+     * @return mixed
+     */
+    public function scopeStatic($query)
+    {
+        return $query->where('type', 'static');
+    }
+
+    /* ---------------- Other methods -------------------- */
+
+    /**
+     * @return bool
+     */
+    public function isStatic()
+    {
+        return $this->type === 'static';
+    }
+
+    /**
+     * @return bool
+     */
+    public function now(): bool
+    {
+        return $this->period === 'now';
+    }
+
+    /**
      * @return mixed
      */
     public function getUsers()
@@ -68,6 +130,7 @@ class AutomatedEmail extends Model
         $users = collect();
 
         // TODO: Get users
+        $filters = $this->filters;
 
         return $users->reject(function ($user) {
             return $user->id <= $this->last_user_id;
@@ -77,10 +140,14 @@ class AutomatedEmail extends Model
     /**
      * @return mixed
      */
-    public function getPeriod()
+    public function getPeriod(): mixed
     {
+        if ($this->now()) {
+            return Carbon::now();
+        }
+
         $number = intval(preg_replace('/[^0-9]+/', '', $this->period), 10);
-        $period = substr($this->period, -1); // h, m, d etc.
+        $period = substr($this->period, -1); // d, w, m, y
         $method = $this->getMethod($period);
         if (!$method) {
             return false;
@@ -94,7 +161,7 @@ class AutomatedEmail extends Model
     /**
      * @return bool
      */
-    public function checkPeriod()
+    public function checkPeriod(): bool
     {
         $period = $this->getPeriod();
         if (!$period) {
@@ -104,6 +171,37 @@ class AutomatedEmail extends Model
         $lastSent = $this->last_sent_at ?: $period;
 
         return $period->gte($lastSent);
+    }
+
+    /**
+     * @param $user
+     * @param $secondUser
+     * @return Model
+     */
+    public function createJob($user, $secondUser = null): Model
+    {
+        return $this->jobs()->create([
+            'user_id'       => $user->id,
+            'other_user_id' => $secondUser ? $secondUser->id : null,
+            'send_at'       => $this->getPeriod('add')
+        ]);
+    }
+
+    /**
+     * Send email
+     *
+     * @param $user
+     * @param $secondUser
+     * @return void
+     */
+    public function sendTo($user, $secondUser = null): void
+    {
+        Mail::to($user)->send(new AutomatedEmails($this, $user, $secondUser));
+
+        $this->logs()->create([
+            'email' => $user->email,
+            'type'  => 'success'
+        ]);
     }
 
     /**

@@ -15,7 +15,7 @@
                             <thead>
                             <tr>
                                 <th>Name</th>
-                                <th class="text-center">Actions</th>
+                                <th width="15%" class="text-center">Actions</th>
                             </tr>
                             </thead>
                             <tbody>

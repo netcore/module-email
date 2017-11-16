@@ -2,19 +2,17 @@
 
 namespace Modules\Email\Emails;
 
-use Modules\Email\Models\Campaign;
-use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Contracts\Queue\ShouldQueue;
+use Modules\Email\Models\Campaign;
 
 class CampaignEmail extends Mailable
 {
     use Queueable, SerializesModels;
 
     /**
-     * @var EmailCampaign
+     * @var Campaign
      */
     public $campaign;
 
@@ -31,10 +29,10 @@ class CampaignEmail extends Mailable
     /**
      * Create a new message instance.
      *
-     * @param EmailCampaign $campaign
-     * @param User          $user
+     * @param Campaign $campaign
+     * @param null     $user
      */
-    public function __construct(Campaign $campaign, User $user)
+    public function __construct(Campaign $campaign, $user = null)
     {
         $this->campaign = $campaign;
         $this->user = $user;
@@ -48,6 +46,8 @@ class CampaignEmail extends Mailable
      */
     public function build()
     {
-        return $this->view('email::emails.campaign-email')->subject($this->campaign->name);
+        $template = $this->config['campaign_emails_template'] ?: 'email::emails.campaign-email';
+
+        return $this->view($template)->subject($this->campaign->name);
     }
 }

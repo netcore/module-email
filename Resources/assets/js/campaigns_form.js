@@ -1,13 +1,13 @@
-var users = $('.users');
-var userIds = [];
+var exceptInput = $('input[name=except]');
+var except = [];
 
 $('.search').DataTable({
-    'columnDefs' : {
+    'columnDefs': {
         orderable: false, targets: 0
     }
 });
 
-$('.search-users').on('click', function (e) {
+$('.search-receivers').on('click', function (e) {
     e.preventDefault();
 
     var data = $('.form-horizontal').find('.filter-data :input').serializeArray();
@@ -15,8 +15,8 @@ $('.search-users').on('click', function (e) {
         type: 'POST',
         url: search_url,
         data: data,
-        success: function (data) {
-            populateDataTable(data);
+        success: function (response) {
+            populateDataTable(response.data);
         },
         error: function (e) {
             console.log("error: " + JSON.stringify(e.responseText));
@@ -24,60 +24,27 @@ $('.search-users').on('click', function (e) {
     });
 });
 
-function populateDataTable(data) {
-    userIds.length = 0;
-
-    $('.search').DataTable().destroy();
-    $('.search').DataTable({
-        'responsive': true,
-        'aaData': data,
-        'columns': [
-            {
-                'data': function (row, type, val, meta) {
-                    return '<input type=checkbox name=found[] value=' + row.id + ' class=checkbox checked>';
-                },
-                orderable: false
-            },
-            {'data': 'full_name'},
-            {'data': 'email'}
-        ]
-    });
-
-    for (var i = 0; i < Object.keys(data).length; i++) {
-        userIds.push(data[i].id);
-    }
-
-    users.val(JSON.stringify(userIds));
-}
-
-function deleteItem(id) {
-    var found = 0;
-    while ((found = userIds.indexOf(id, found)) !== -1) userIds.splice(found, 1);
-}
-
-$(document).on('change', '.checkbox', function () {
-    var userId = parseInt($(this).val());
+$(document).on('change', '.except', function () {
+    var email = $(this).val();
 
     if ($(this).is(':checked')) {
-        userIds.push(userId);
+        restoreReceiver(email);
     } else {
-        deleteItem(userId);
+        removeReceiver(email);
     }
-
-    users.val(JSON.stringify(userIds));
 });
 
-if (users_url) {
+if (receivers_url) {
     $('.datatable').DataTable({
         processing: true,
         serverSide: true,
-        ajax: users_url,
+        ajax: receivers_url,
         responsive: true,
         order: [[0, 'asc']],
         columns: [
-            {data: 'full_name', name: 'full_name'},
+            {data: 'user', name: 'user'},
             {data: 'email', name: 'email'},
-            {data: 'sent', name: 'pivot.is_sent'},
+            {data: 'sent', name: 'is_sent'},
             {
                 data: 'actions',
                 name: 'actions',
@@ -87,4 +54,39 @@ if (users_url) {
             }
         ]
     });
+}
+
+function populateDataTable(data) {
+    $('.search').DataTable().destroy();
+    $('.search').DataTable({
+        'responsive': true,
+        'aaData': data,
+        'columns': [
+            {
+                'data': function (row, type, val, meta) {
+                    return '<input type=checkbox name=found[] value=' + row.email + ' class=except checked>';
+                },
+            },
+            {'data': 'full_name'},
+            {'data': 'email'}
+        ],
+        'columnDefs': {
+            orderable: false, targets: 0
+        }
+    });
+}
+
+function restoreReceiver(email) {
+    var found = 0;
+    while ((found = except.indexOf(email, found)) !== -1) {
+        except.splice(found, 1);
+    }
+
+    exceptInput.val(JSON.stringify(except));
+}
+
+function removeReceiver(email) {
+    except.push(email);
+
+    exceptInput.val(JSON.stringify(except));
 }

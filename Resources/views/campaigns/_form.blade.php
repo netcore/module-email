@@ -100,13 +100,15 @@
                                                 {{ isset($filter['step']) ? 'step=' . $filter['step'] : '' }}
                                         >
                                     </div>
+                                @elseif ($filter['type'] == 'text')
+                                    <input type="text" name="filters[{{ $key }}]" class="form-control" />
                                 @endif
                             </td>
                         </tr>
                     @endforeach
                     </tbody>
                 </table>
-                <button type="button" class="btn btn-md btn-primary pull-right search-users">
+                <button type="button" class="btn btn-md btn-primary pull-right search-receivers">
                     <i class="fa fa-search"></i> Search
                 </button>
             </div>
@@ -134,7 +136,7 @@
                         </table>
                     </div>
                 </div>
-                <input type="hidden" name="users" class="users"/>
+                <input type="hidden" name="except" value="[]" class="users"/>
             </div>
         </div>
     </div>
@@ -145,8 +147,8 @@
 
 @section('scripts')
     <script>
-        var search_url = '{{ route('admin::campaigns.search-users') }}';
-        var users_url = '{{ isset($campaign) ? route('admin::campaigns.get-users', $campaign) : '' }}';
+        var search_url = '{{ route('admin::campaigns.search-receivers') }}';
+        var receivers_url = '{{ isset($campaign) ? route('admin::campaigns.get-receivers', $campaign) : '' }}';
     </script>
     <script src="{{ versionedAsset('assets/email/admin/js/campaigns_form.js') }}"></script>
 @endsection

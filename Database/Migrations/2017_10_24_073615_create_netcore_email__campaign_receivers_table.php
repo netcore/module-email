@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateNetcoreEmailCampaignUserTable extends Migration
+class CreateNetcoreEmailCampaignReceiversTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,13 @@ class CreateNetcoreEmailCampaignUserTable extends Migration
      */
     public function up()
     {
-        Schema::create('netcore_email__campaign_user', function (Blueprint $table) {
+        Schema::create('netcore_email__campaign_receivers', function (Blueprint $table) {
             $table->increments('id');
 
             $table->unsignedInteger('campaign_id');
-            $table->unsignedInteger('user_id');
-            $table->enum('is_sent', [0, 1])->default(0);
+            $table->unsignedInteger('user_id')->nullable();
+            $table->string('email');
+            $table->boolean('is_sent')->default(0);
 
             $table->timestamp('sent_at')->nullable();
             $table->timestamps();
@@ -35,6 +36,6 @@ class CreateNetcoreEmailCampaignUserTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('netcore_email__campaign_user');
+        Schema::dropIfExists('netcore_email__campaign_receivers');
     }
 }

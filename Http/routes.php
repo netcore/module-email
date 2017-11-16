@@ -17,17 +17,17 @@ Route::group([
         'uses' => 'CampaignController@stop',
         'as'   => 'campaigns.stop'
     ]);
-    Route::get('campaigns/get-users/{campaign}', [
-        'as'   => 'campaigns.get-users',
-        'uses' => 'CampaignController@getUsers'
+    Route::get('campaigns/get-receivers/{campaign}', [
+        'as'   => 'campaigns.get-receivers',
+        'uses' => 'CampaignController@getReceivers'
     ]);
-    Route::post('campaigns/search-users', [
-        'as'   => 'campaigns.search-users',
-        'uses' => 'CampaignController@searchUsers'
+    Route::post('campaigns/search-receivers', [
+        'as'   => 'campaigns.search-receivers',
+        'uses' => 'CampaignController@searchReceivers'
     ]);
-    Route::delete('/campaigns/{campaign}/{user}/delete', [
-        'uses' => 'CampaignController@destroyUser',
-        'as'   => 'campaigns.destroy-user'
+    Route::delete('/campaigns/{campaign}/{receiver}/delete', [
+        'uses' => 'CampaignController@destroyReceiver',
+        'as'   => 'campaigns.destroy-receiver'
     ]);
 
     Route::resource('subscribers', 'SubscriberController', ['only' => ['index', 'destroy']]);

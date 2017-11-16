@@ -13,7 +13,7 @@
             "Modules\\Email\\": ""
         },
 		"files": [
-			"helpers.php"
+			"Helpers/helpers.php"
 		]
     },
 	"require": {

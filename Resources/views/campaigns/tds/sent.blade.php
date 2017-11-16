@@ -1,1 +1,1 @@
-{{ $user->pivot->is_sent ? 'Yes' : 'No' }}
+{{ $receiver->is_sent ? 'Yes' : 'No' }}

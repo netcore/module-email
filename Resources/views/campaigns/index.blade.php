@@ -20,7 +20,8 @@
                             <thead>
                             <tr>
                                 <th>Name</th>
-                                <th class="text-center">Actions</th>
+                                <th>Status</th>
+                                <th width="15%" class="text-center">Actions</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -30,6 +31,9 @@
                                         @foreach(\Netcore\Translator\Helpers\TransHelper::getAllLanguages() as $language)
                                             <strong>{{ strtoupper($language->iso_code) }}:</strong> {{ trans_model($campaign, $language, 'name') }}<br>
                                         @endforeach
+                                    </td>
+                                    <td width="10%">
+                                        {{ $campaign->getStatus() }}
                                     </td>
                                     <td width="15%" class="text-center">
                                         @if ($campaign->inProgress())
