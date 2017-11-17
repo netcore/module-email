@@ -63,7 +63,7 @@ class MenuTableSeeder extends Seeder
             ]
         ];
 
-        foreach ($menus as $key => $items) {
+        foreach ($menuItems as $key => $items) {
             $menu = Menu::firstOrCreate([
                 'key' => $key
             ]);
