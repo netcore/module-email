@@ -23,16 +23,18 @@
     @endforeach
 </div>
 
-<div class="form-group">
-    <label class="col-md-2 control-label">Frequency</label>
-    <div class="col-md-8">
-        <div class="input-group">
-            {!! Form::number('period_number', $periodNumber, ['class' => 'form-control','min' => 1, 'max' => 365]) !!}
-            <span class="input-group-addon"></span>
-            {!! Form::select('period_type', ['d' => 'day/s', 'w' => 'week/s', 'm' => 'month/s', 'y' => 'year/s'], $periodType, ['class' => 'form-control']) !!}
+@if ($automatedEmail->type === 'period')
+    <div class="form-group">
+        <label class="col-md-2 control-label">Frequency</label>
+        <div class="col-md-8">
+            <div class="input-group">
+                {!! Form::number('period_number', $periodNumber, ['class' => 'form-control','min' => 1, 'max' => 365]) !!}
+                <span class="input-group-addon"></span>
+                {!! Form::select('period_type', ['d' => 'day/s', 'w' => 'week/s', 'm' => 'month/s', 'y' => 'year/s'], $periodType, ['class' => 'form-control']) !!}
+            </div>
         </div>
     </div>
-</div>
+@endif
 
 <div class="form-group">
     <label class="col-md-2 control-label">Active?</label>
