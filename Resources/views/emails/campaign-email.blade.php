@@ -3,5 +3,5 @@
 ])
 
 @section('content')
-    {!! email()->replaceUserData($campaign->text, $user) !!}
+    {!! $campaign->replaceVariables($user) !!}
 @endsection

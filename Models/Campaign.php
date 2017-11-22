@@ -7,13 +7,14 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Facades\Mail;
+use Modules\Email\Traits\ReplaceVariables;
 use Modules\Translate\Traits\SyncTranslations;
 use Modules\Email\Emails\CampaignEmail;
 use Modules\Email\Translations\CampaignTranslation;
 
 class Campaign extends Model
 {
-    use Translatable, SyncTranslations;
+    use Translatable, SyncTranslations, ReplaceVariables;
 
     /**
      *  Statuses

@@ -7,9 +7,8 @@ use Dimsav\Translatable\Translatable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
-use Illuminate\Foundation\Auth\User;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Str;
+use Modules\Email\Traits\ReplaceVariables;
 use Modules\Translate\Traits\SyncTranslations;
 use Modules\Email\Emails\AutomatedEmails;
 use Modules\Email\Models\AutomatedEmailJob;
@@ -17,7 +16,7 @@ use Modules\Email\Translations\AutomatedEmailTranslation;
 
 class AutomatedEmail extends Model
 {
-    use Translatable, SyncTranslations;
+    use Translatable, SyncTranslations, ReplaceVariables;
 
     /**
      * @var string
@@ -212,30 +211,6 @@ class AutomatedEmail extends Model
             'email' => $job->user->email,
             'type'  => 'success'
         ]);
-    }
-
-    /**
-     * Replaces variables in email text
-     *
-     * @param User $user
-     * @param array $data
-     * @return string
-     */
-    public function replaceVariables(User $user, $data = []) : string
-    {
-        $userReplaceable = method_exists($user, 'getReplaceable') ? $user->getReplaceable() : [];
-        $replace         = array_merge($data, $userReplaceable);
-        $line            = $this->text;
-
-        foreach ($replace as $key => $value) {
-            $line = str_replace(
-                [':'.$key, ':'.Str::upper($key), ':'.Str::ucfirst($key)],
-                [$value, Str::upper($value), Str::ucfirst($value)],
-                $line
-            );
-        }
-
-        return $line;
     }
 
     /**
