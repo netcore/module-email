@@ -1,10 +1,12 @@
 <?php
 
-namespace Modules\Email\Entities;
+namespace Modules\Email\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Modules\Email\Models\AutomatedEmail;
+use Modules\Email\Models\AutomatedEmailJobVariable;
 
 class AutomatedEmailJob extends Model
 {
@@ -53,6 +55,28 @@ class AutomatedEmailJob extends Model
     public function otherUser(): BelongsTo
     {
         return $this->belongsTo(config('netcore.module-admin.user.model'), 'other_user_id');
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function variables(): HasMany
+    {
+        return $this->hasMany(AutomatedEmailJobVariable::class);
+    }
+
+    /* ---------------- Accessors -------------------- */
+
+    /**
+     * Returns variable list
+     *
+     * @return array
+     */
+    public function getVariableListAttribute(): array
+    {
+        return $this->variables
+                    ->pluck('value', 'key')
+                    ->toArray();
     }
 
     /* ---------------- Other methods -------------------- */

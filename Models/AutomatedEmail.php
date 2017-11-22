@@ -204,10 +204,18 @@ class AutomatedEmail extends Model
         ]);
     }
 
+    /**
+     * Replaces variables in email text
+     *
+     * @param User $user
+     * @param array $data
+     * @return string
+     */
     public function replaceVariables(User $user, $data = []) : string
     {
-        $replace = method_exists($user, 'getReplaceable') ? $user->getReplaceable() : [];
-        $line    = $this->text;
+        $userReplaceable = method_exists($user, 'getReplaceable') ? $user->getReplaceable() : [];
+        $replace         = array_merge($data, $userReplaceable);
+        $line            = $this->text;
 
         foreach ($replace as $key => $value) {
             $line = str_replace(
