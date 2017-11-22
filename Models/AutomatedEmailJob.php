@@ -75,24 +75,7 @@ class AutomatedEmailJob extends Model
     public function getVariableListAttribute(): array
     {
         return $this->variables
-                    ->pluck('value', 'key')
-                    ->toArray();
-    }
-
-    /* ---------------- Other methods -------------------- */
-
-    /**
-     * Check if it is time to send
-     *
-     * @return bool
-     */
-    public function timeToSend(): bool
-    {
-        $automatedEmail = $this->automatedEmail;
-        if (!$automatedEmail) {
-            return false;
-        }
-
-        return $automatedEmail->now() ? true : $this->send_at->lte(Carbon::now());
+            ->pluck('value', 'key')
+            ->toArray();
     }
 }

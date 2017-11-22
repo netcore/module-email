@@ -65,21 +65,32 @@ class SendAutomatedEmails extends Command
             ]);
         }
 
-        foreach (AutomatedEmail::static()->active()->get() as $email) {
-            $email->jobs->each(function ($job) use ($email) {
-                if ($job->timeToSend()) {
+        foreach (AutomatedEmail::without('translations')->static()->active()->get() as $email) {
+
+            foreach ($email->jobs as $job)
+            {
+
+                if ($email->now() || $this->send_at->lte(Carbon::now())) {
+
                     try {
+
                         $email->sendTo($job);
                         $job->delete();
+
                     } catch (\Exception $e) {
+
                         $email->logs()->create([
                             'email'   => $job->user->email,
                             'type'    => 'error',
                             'message' => $e->getMessage()
                         ]);
+
                     }
+
                 }
-            });
+
+            }
+
         }
     }
 }
