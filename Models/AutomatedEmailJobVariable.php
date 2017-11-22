@@ -20,4 +20,13 @@ class AutomatedEmailJobVariable extends Model
      */
     public $timestamps = false;
 
+    /**
+     * Mass assignable columns
+     *
+     * @var array
+     */
+    protected $fillable = [
+        'key', 'value'
+    ];
+
 }

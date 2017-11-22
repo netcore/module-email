@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Modules\Translate\Traits\SyncTranslations;
 use Modules\Email\Emails\AutomatedEmails;
-use Modules\Email\Entities\AutomatedEmailJob;
+use Modules\Email\Models\AutomatedEmailJob;
 use Modules\Email\Translations\AutomatedEmailTranslation;
 
 class AutomatedEmail extends Model
@@ -180,13 +180,23 @@ class AutomatedEmail extends Model
      * @param $secondUser
      * @return Model
      */
-    public function createJob($user, $secondUser = null): Model
+    public function createJob($user, $secondUser = null, $data = []): Model
     {
-        return $this->jobs()->create([
+        $job = $this->jobs()->create([
             'user_id'       => $user->id,
             'other_user_id' => $secondUser ? $secondUser->id : null,
             'send_at'       => $this->getPeriod('add')
         ]);
+
+        foreach ($data as $key => $value)
+        {
+            $job->variables()->create([
+                'key'   =>  $key,
+                'value' =>  $value
+            ]);
+        }
+
+        return $job;
     }
 
     /**

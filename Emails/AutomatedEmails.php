@@ -5,7 +5,7 @@ namespace Modules\Email\Emails;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
-use Modules\Email\Entities\AutomatedEmailJob;
+use Modules\Email\Models\AutomatedEmailJob;
 use Modules\Email\Models\AutomatedEmail;
 
 class AutomatedEmails extends Mailable
