@@ -69,11 +69,11 @@ class SendAutomatedEmails extends Command
             $email->jobs->each(function ($job) use ($email) {
                 if ($job->timeToSend()) {
                     try {
-                        $email->sendTo($job->user, $job->otherUser);
+                        $email->sendTo($job);
                         $job->delete();
                     } catch (\Exception $e) {
                         $email->logs()->create([
-                            'email'   => $user->email,
+                            'email'   => $job->user->email,
                             'type'    => 'error',
                             'message' => $e->getMessage()
                         ]);

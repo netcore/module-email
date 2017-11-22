@@ -7,7 +7,9 @@ use Dimsav\Translatable\Translatable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Foundation\Auth\User;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 use Modules\Translate\Traits\SyncTranslations;
 use Modules\Email\Emails\AutomatedEmails;
 use Modules\Email\Entities\AutomatedEmailJob;
@@ -140,7 +142,7 @@ class AutomatedEmail extends Model
     /**
      * @return mixed
      */
-    public function getPeriod(): mixed
+    public function getPeriod()
     {
         if ($this->now()) {
             return Carbon::now();
@@ -190,18 +192,32 @@ class AutomatedEmail extends Model
     /**
      * Send email
      *
-     * @param $user
-     * @param $secondUser
-     * @return void
+     * @param AutomatedEmailJob $job
      */
-    public function sendTo($user, $secondUser = null): void
+    public function sendTo(AutomatedEmailJob $job): void
     {
-        Mail::to($user)->send(new AutomatedEmails($this, $user, $secondUser));
+        Mail::to($job->user->email)->send(new AutomatedEmails($job));
 
         $this->logs()->create([
-            'email' => $user->email,
+            'email' => $job->user->email,
             'type'  => 'success'
         ]);
+    }
+
+    public function replaceVariables(User $user, $data = []) : string
+    {
+        $replace = method_exists($user, 'getReplaceable') ? $user->getReplaceable() : [];
+        $line    = $this->text;
+
+        foreach ($replace as $key => $value) {
+            $line = str_replace(
+                [':'.$key, ':'.Str::upper($key), ':'.Str::ucfirst($key)],
+                [$value, Str::upper($value), Str::ucfirst($value)],
+                $line
+            );
+        }
+
+        return $line;
     }
 
     /**

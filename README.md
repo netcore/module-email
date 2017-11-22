@@ -9,6 +9,7 @@ installed:
 1. https://github.com/netcore/netcore
 2. https://github.com/netcore/module-admin
 3. https://github.com/netcore/module-translate
+4. https://github.com/netcore/module-user
 
 ### Installation
 
@@ -31,6 +32,18 @@ installed:
 ```
     $schedule->command('automated-emails:send')->everyMinute();
 ```
+
+- Add `Modules\User\Traits\ReplaceableAttributes` trait to your `User` model and set public property `$replaceable` which you want dynamically use in email templates:
+
+```
+public $replaceable = [
+  'first_name',
+  'last_name',
+  'email'
+];
+``` 
+
+and set `$replaceablePrefix` to prefix the replaceable attributes.
  
 ### Configuration
 

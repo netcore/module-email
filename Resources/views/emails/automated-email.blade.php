@@ -3,5 +3,5 @@
 ])
 
 @section('content')
-    {!! email()->replaceUserData($automatedEmail->text, $user) !!}
+    {!! $automatedEmail->replaceVariables($job->user) !!}
 @endsection
