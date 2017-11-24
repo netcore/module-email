@@ -21,7 +21,7 @@ trait ReplaceVariables {
 
         foreach ($replace as $key => $value) {
             $line = str_replace(
-                [':'.$key, ':'.Str::upper($key), ':'.Str::ucfirst($key)],
+                ['['.$key.']', '['.Str::upper($key).']', '['.Str::ucfirst($key).']'],
                 [$value, Str::upper($value), Str::ucfirst($value)],
                 $line
             );

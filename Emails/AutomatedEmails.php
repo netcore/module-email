@@ -3,6 +3,7 @@
 namespace Modules\Email\Emails;
 
 use Illuminate\Bus\Queueable;
+use Illuminate\Foundation\Auth\User;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 use Modules\Email\Models\AutomatedEmailJob;
@@ -33,22 +34,23 @@ class AutomatedEmails extends Mailable
     public $config;
 
     /**
-     * @var
+     * @var array
      */
-    public $job;
+    public $variables = [];
 
     /**
      * AutomatedEmails constructor.
      *
-     * @param AutomatedEmailJob $job
+     * @param User $user
+     * @param $job
      */
-    public function __construct(AutomatedEmailJob $job)
+    public function __construct(User $user, $job)
     {
         $this->automatedEmail = $job->automatedEmail;
-        $this->user           = $job->user;
+        $this->user           = $user;
         $this->secondUser     = $job->secondUser;
         $this->config         = config('netcore.module-email');
-        $this->job            = $job;
+        $this->variables      = $job ? $job->variable_list : [];
     }
 
     /**

@@ -7,6 +7,7 @@ use Dimsav\Translatable\Translatable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Foundation\Auth\User;
 use Illuminate\Support\Facades\Mail;
 use Modules\Email\Traits\ReplaceVariables;
 use Modules\Translate\Traits\SyncTranslations;
@@ -201,14 +202,15 @@ class AutomatedEmail extends Model
     /**
      * Send email
      *
-     * @param AutomatedEmailJob $job
+     * @param User $user
+     * @param null $job
      */
-    public function sendTo(AutomatedEmailJob $job): void
+    public function sendTo(User $user, $job = null): void
     {
-        Mail::to($job->user->email)->send(new AutomatedEmails($job));
+        Mail::to($user->email)->send(new AutomatedEmails($user, $job));
 
         $this->logs()->create([
-            'email' => $job->user->email,
+            'email' => $user->email,
             'type'  => 'success'
         ]);
     }

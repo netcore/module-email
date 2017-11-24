@@ -74,7 +74,7 @@ class SendAutomatedEmails extends Command
 
                     try {
 
-                        $email->sendTo($job);
+                        $email->sendTo($job->user, $job);
                         $job->delete();
 
                     } catch (\Exception $e) {
