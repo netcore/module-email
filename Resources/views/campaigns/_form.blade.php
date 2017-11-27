@@ -16,7 +16,7 @@
             <div class="form-group{{ $errors->has('translations.' . $language->iso_code . '.text') ? ' has-error' : '' }}">
                 <label class="col-md-2 control-label">Text</label>
                 <div class="col-md-8">
-                    {!! Form::textarea('translations['.$language->iso_code.'][text]', trans_model(isset($campaign) ? $campaign : null, $language, 'text'), ['class' => 'form-control']) !!}
+                    {!! Form::textarea('translations['.$language->iso_code.'][text]', trans_model(isset($campaign) ? $campaign : null, $language, 'text'), ['class' => 'summernote']) !!}
                 </div>
             </div>
         </div>
@@ -57,58 +57,57 @@
             <div class="panel-heading">
                 <i class="fa fa-search"></i> Search users
             </div>
-            <div class="panel-body">
-                <table class="table filter-data">
-                    <thead>
-                    <th>Parameter</th>
-                    <th>Value</th>
-                    </thead>
-                    <tbody>
+            <div class="panel-body filter-data">
+                <div class="form-group">
+                    <select name="receivers" class="form-control" v-model="receivers">
+                        <option value="users">Filter users</option>
+                        <option value="subscribers">Subscribers</option>
+                    </select>
+                </div>
+                <div class="filters" v-if="receivers === 'users'">
                     @foreach($filters as $key => $filter)
-                        <tr>
-                            <td>{{ $filter['name'] }}</td>
-                            <td>
-                                @if ($filter['type'] == 'select')
-                                    <select name="filters[{{ $key }}]" class="form-control select2">
-                                        @foreach ($filter['values'] as $id => $value)
-                                            <option value="{{ $id }}">{{ $value }}</option>
-                                        @endforeach
-                                    </select>
-                                @elseif ($filter['type'] == 'multi-select')
-                                    <select name="filters[{{ $key }}][]" class="form-control select2" multiple>
-                                        @foreach ($filter['values'] as $id => $value)
-                                            <option value="{{ $id }}">{{ $value }}</option>
-                                        @endforeach
-                                    </select>
-                                @elseif ($filter['type'] == 'from-to')
-                                    <div class="input-group">
-                                        <input type="{{ isset($filter['field_type']) ? $filter['field_type'] : 'text' }}"
-                                               name="filters[{{ $key }}][from]"
-                                               class="form-control {{ isset($filter['class']) ? $filter['class'] : '' }}"
-                                               placeholder="No"
-                                               min="0"
-                                                {{ isset($filter['max']) ? 'max=' . $filter['max'] : '' }}
-                                                {{ isset($filter['step']) ? 'step=' . $filter['step'] : '' }}
-                                        >
-                                        <span class="input-group-addon">-</span>
-                                        <input type="{{ isset($filter['field_type']) ? $filter['field_type'] : 'text' }}"
-                                               name="filters[{{ $key }}][to]"
-                                               class="form-control {{ isset($filter['class']) ? $filter['class'] : '' }}"
-                                               placeholder="Līdz"
-                                               min="0"
-                                                {{ isset($filter['max']) ? 'max=' . $filter['max'] : '' }}
-                                                {{ isset($filter['step']) ? 'step=' . $filter['step'] : '' }}
-                                        >
-                                    </div>
-                                @elseif ($filter['type'] == 'text')
-                                    <input type="text" name="filters[{{ $key }}]" class="form-control" />
-                                @endif
-                            </td>
-                        </tr>
+                        <div class="form-group">
+                            {!! Form::label($key, $filter['name']) !!}
+                            @if ($filter['type'] == 'select')
+                                <select name="filters[{{ $key }}]" class="form-control select2">
+                                    @foreach ($filter['values'] as $id => $value)
+                                        <option value="{{ $id }}">{{ $value }}</option>
+                                    @endforeach
+                                </select>
+                            @elseif ($filter['type'] == 'multi-select')
+                                <select name="filters[{{ $key }}][]" class="form-control select2" multiple>
+                                    @foreach ($filter['values'] as $id => $value)
+                                        <option value="{{ $id }}">{{ $value }}</option>
+                                    @endforeach
+                                </select>
+                            @elseif ($filter['type'] == 'from-to')
+                                <div class="input-group">
+                                    <input type="{{ isset($filter['field_type']) ? $filter['field_type'] : 'text' }}"
+                                           name="filters[{{ $key }}][from]"
+                                           class="form-control {{ isset($filter['class']) ? $filter['class'] : '' }}"
+                                           placeholder="From"
+                                           min="0"
+                                            {{ isset($filter['max']) ? 'max=' . $filter['max'] : '' }}
+                                            {{ isset($filter['step']) ? 'step=' . $filter['step'] : '' }}
+                                    >
+                                    <span class="input-group-addon">-</span>
+                                    <input type="{{ isset($filter['field_type']) ? $filter['field_type'] : 'text' }}"
+                                           name="filters[{{ $key }}][to]"
+                                           class="form-control {{ isset($filter['class']) ? $filter['class'] : '' }}"
+                                           placeholder="To"
+                                           min="0"
+                                            {{ isset($filter['max']) ? 'max=' . $filter['max'] : '' }}
+                                            {{ isset($filter['step']) ? 'step=' . $filter['step'] : '' }}
+                                    >
+                                </div>
+                            @elseif ($filter['type'] == 'text')
+                                <input type="text" name="filters[{{ $key }}]" class="form-control"/>
+                            @endif
+                        </div>
                     @endforeach
-                    </tbody>
-                </table>
-                <button type="button" class="btn btn-md btn-primary pull-right search-receivers">
+                </div>
+                <br/>
+                <button type="button" class="btn btn-md btn-primary pull-right" @click="searchReceivers">
                     <i class="fa fa-search"></i> Search
                 </button>
             </div>

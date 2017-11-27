@@ -1,3 +1,50 @@
+new Vue({
+    el: '#emailApp',
+
+    data: {
+        except: [],
+        filters: [],
+        receivers: ''
+    },
+
+    methods: {
+        searchReceivers() {
+            this.filters = $('.form-horizontal').find('.filter-data :input').serializeArray();
+            $.ajax({
+                type: 'POST',
+                url: search_url,
+                data: this.filters,
+                success: function (response) {
+                    this.populateDataTable(response.data);
+                }.bind(this),
+                error: function (e) {
+                    console.log("error: " + JSON.stringify(e.responseText));
+                }
+            });
+        },
+
+        populateDataTable(data) {
+            $('.search').DataTable().destroy();
+            $('.search').DataTable({
+                'responsive': true,
+                'aaData': data,
+                'columns': [
+                    {
+                        'data': function (row, type, val, meta) {
+                            return '<input type=checkbox name=found[] value=' + row.email + ' class=except checked>';
+                        },
+                    },
+                    {'data': 'full_name'},
+                    {'data': 'email'}
+                ],
+                'columnDefs': {
+                    orderable: false, targets: 0
+                }
+            });
+        },
+    }
+});
+
 var exceptInput = $('input[name=except]');
 var except = [];
 
@@ -5,23 +52,6 @@ $('.search').DataTable({
     'columnDefs': {
         orderable: false, targets: 0
     }
-});
-
-$('.search-receivers').on('click', function (e) {
-    e.preventDefault();
-
-    var data = $('.form-horizontal').find('.filter-data :input').serializeArray();
-    $.ajax({
-        type: 'POST',
-        url: search_url,
-        data: data,
-        success: function (response) {
-            populateDataTable(response.data);
-        },
-        error: function (e) {
-            console.log("error: " + JSON.stringify(e.responseText));
-        }
-    });
 });
 
 $(document).on('change', '.except', function () {
@@ -53,26 +83,6 @@ if (receivers_url) {
                 class: 'text-center'
             }
         ]
-    });
-}
-
-function populateDataTable(data) {
-    $('.search').DataTable().destroy();
-    $('.search').DataTable({
-        'responsive': true,
-        'aaData': data,
-        'columns': [
-            {
-                'data': function (row, type, val, meta) {
-                    return '<input type=checkbox name=found[] value=' + row.email + ' class=except checked>';
-                },
-            },
-            {'data': 'full_name'},
-            {'data': 'email'}
-        ],
-        'columnDefs': {
-            orderable: false, targets: 0
-        }
     });
 }
 

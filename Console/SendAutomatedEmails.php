@@ -67,10 +67,9 @@ class SendAutomatedEmails extends Command
 
         foreach (AutomatedEmail::without('translations')->static()->active()->get() as $email) {
 
-            foreach ($email->jobs as $job)
-            {
+            foreach ($email->jobs as $job) {
 
-                if ($email->now() || $this->send_at->lte(Carbon::now())) {
+                if ($email->now() || $job->send_at->lte(Carbon::now())) {
 
                     try {
 

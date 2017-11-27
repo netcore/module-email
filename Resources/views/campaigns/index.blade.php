@@ -1,6 +1,17 @@
 @extends('admin::layouts.master')
 
 @section('content')
+    {!! Breadcrumbs::render('admin.campaigns') !!}
+
+    <div class="page-header">
+        <h1>
+            <span class="text-muted font-weight-light">
+                <i class="page-header-icon fa fa-envelope"></i>
+                Campaigns
+            </span>
+        </h1>
+    </div>
+
     @include('admin::_partials._messages')
 
     <div class="row">

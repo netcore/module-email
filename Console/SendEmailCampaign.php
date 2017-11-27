@@ -47,6 +47,10 @@ class SendEmailCampaign extends Command
             exit;
         }
 
+        $campaign->update([
+            'status' => 'sending'
+        ]);
+
         $lastEmail = null;
         foreach ($campaign->receivers()->notSent()->get() as $receiver) {
 

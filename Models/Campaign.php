@@ -153,10 +153,6 @@ class Campaign extends Model
     {
         file_put_contents($this->lockFile(), time());
 
-        $this->update([
-            'status' => 'sending'
-        ]);
-
         // Launch command
         \Artisan::queue('email-campaign:send', [
             'campaign' => $this->id

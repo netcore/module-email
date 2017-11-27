@@ -1,6 +1,17 @@
 @extends('admin::layouts.master')
 
 @section('content')
+    {!! Breadcrumbs::render('admin.campaigns.create') !!}
+
+    <div class="page-header">
+        <h1>
+            <span class="text-muted font-weight-light">
+                <i class="page-header-icon fa fa-envelope"></i>
+                Campaigns
+            </span>
+        </h1>
+    </div>
+
     @include('admin::_partials._messages')
 
     <div class="row">
@@ -14,7 +25,7 @@
                     </div>
                     <h4 class="panel-title">Create campaign</h4>
                 </div>
-                <div class="panel-body">
+                <div class="panel-body" id="emailApp">
                     {!! Form::open(['route' => 'admin::campaigns.store', 'class' => 'form-horizontal']) !!}
 
                     @include('email::campaigns._form')

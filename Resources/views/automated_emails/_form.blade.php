@@ -23,6 +23,8 @@
     @endforeach
 </div>
 
+<hr>
+
 @if ($automatedEmail->type === 'period')
     <div class="form-group">
         <label class="col-md-2 control-label">Frequency</label>
