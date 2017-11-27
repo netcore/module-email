@@ -31,6 +31,7 @@ class AutomatedEmail extends Model
         'key',
         'period',
         'type',
+        'filters',
         'is_active',
         'last_sent_at',
         'last_user_id'
@@ -40,6 +41,13 @@ class AutomatedEmail extends Model
      * @var array
      */
     protected $dates = ['last_sent_at'];
+
+    /**
+     * @var array
+     */
+    protected $casts = [
+        'filters' => 'array'
+    ];
 
     /**
      * @var string
@@ -111,9 +119,17 @@ class AutomatedEmail extends Model
     /**
      * @return bool
      */
-    public function isStatic()
+    public function isStatic(): bool
     {
         return $this->type === 'static';
+    }
+
+    /**
+     * @return bool
+     */
+    public function isPeriod(): bool
+    {
+        return $this->type === 'period';
     }
 
     /**
@@ -132,7 +148,14 @@ class AutomatedEmail extends Model
         $users = collect();
 
         // TODO: Get users
-        $filters = $this->filters;
+        $users = User::getQuery();
+        foreach ($this->filters as $v) {
+            foreach ($v as $t => $q) {
+                $users->{$t}(implode('', $q));
+            }
+        }
+
+        $users = $users->get();
 
         return $users->reject(function ($user) {
             return $user->id <= $this->last_user_id;
@@ -140,9 +163,10 @@ class AutomatedEmail extends Model
     }
 
     /**
+     * @param string $action
      * @return mixed
      */
-    public function getPeriod()
+    public function getPeriod($action = 'sub')
     {
         if ($this->now()) {
             return Carbon::now();
@@ -150,7 +174,7 @@ class AutomatedEmail extends Model
 
         $number = intval(preg_replace('/[^0-9]+/', '', $this->period), 10);
         $period = substr($this->period, -1); // d, w, m, y
-        $method = $this->getMethod($period);
+        $method = $this->getMethod($period, $action);
         if (!$method) {
             return false;
         }
@@ -176,11 +200,12 @@ class AutomatedEmail extends Model
     }
 
     /**
-     * @param $user
-     * @param $secondUser
+     * @param       $user
+     * @param null  $secondUser
+     * @param array $variables
      * @return Model
      */
-    public function createJob($user, $secondUser = null, $data = []): Model
+    public function createJob($user, $secondUser = null, $variables = []): Model
     {
         $job = $this->jobs()->create([
             'user_id'       => $user->id,
@@ -188,11 +213,10 @@ class AutomatedEmail extends Model
             'send_at'       => $this->getPeriod('add')
         ]);
 
-        foreach ($data as $key => $value)
-        {
+        foreach ($variables as $key => $value) {
             $job->variables()->create([
-                'key'   =>  $key,
-                'value' =>  $value
+                'key'   => $key,
+                'value' => $value
             ]);
         }
 
@@ -217,16 +241,17 @@ class AutomatedEmail extends Model
 
     /**
      * @param $period
+     * @param $action
      * @return mixed
      */
-    private function getMethod($period)
+    private function getMethod($period, $action)
     {
         $array = [
-            'h' => 'subHours',
-            'd' => 'subDays',
-            'w' => 'subWeeks',
-            'm' => 'subMonthsNoOverflow',
-            'y' => 'subYears'
+            'h' => $action === 'sub' ? 'subHours' : 'addHours',
+            'd' => $action === 'sub' ? 'subDays' : 'addDays',
+            'w' => $action === 'sub' ? 'subWeeks' : 'addWeeks',
+            'm' => $action === 'sub' ? 'subMonthsNoOverflow' : 'addMonthsNoOverflow',
+            'y' => $action === 'sub' ? 'subYears' : 'addYears',
         ];
 
         return array_get($array, $period, null);

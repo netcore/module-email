@@ -17,9 +17,10 @@ class CreateNetcoreEmailAutomatedEmailsTable extends Migration
             $table->increments('id');
 
             $table->unsignedInteger('last_user_id')->nullable();
-            $table->string('key');
+            $table->string('key')->index();
             $table->string('period')->nullable();
             $table->string('type');
+            $table->text('filters')->nullable();
             $table->boolean('is_active')->default(0);
 
             $table->timestamp('last_sent_at')->nullable();

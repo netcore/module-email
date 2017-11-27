@@ -2,17 +2,22 @@
 
 namespace Modules\Email\Repositories;
 
+use Modules\Email\Models\AutomatedEmail;
 use Modules\Email\Models\Subscriber;
 
 class EmailRepository
 {
+    /**
+     * @var \Illuminate\Config\Repository|mixed
+     */
+    protected $config;
 
     /**
      * EmailRepository constructor.
      */
     public function __construct()
     {
-        //
+        $this->config = config('netcore.module-email');
     }
 
     /**
@@ -25,11 +30,11 @@ class EmailRepository
             return false;
         }
 
-        Subscriber::updateOrCreate(['email' => $email], [
+        return Subscriber::updateOrCreate([
+            'email' => $email
+        ], [
             'user_id' => auth()->check() ? auth()->id() : null
         ]);
-
-        return true;
     }
 
     /**
@@ -43,28 +48,60 @@ class EmailRepository
             return false;
         }
 
-        $subscriber->delete();
-
-        return true;
+        return $subscriber->delete();
     }
 
     /**
-     * @param $text
-     * @param $user
-     * @return string
+     * @param       $key
+     * @param       $user
+     * @param null  $secondUser
+     * @param array $data
+     * @return mixed
      */
-    function replaceUserData($text, $user): string
+    public function send($key, $user, $secondUser = null, $data = [])
     {
-        $predefined = null;
-
-        if (method_exists($user, 'replaceData')) {
-            $predefined = $user->replaceData();
+        $email = AutomatedEmail::where('key', $key)->first();
+        if (!$email) {
+            return false;
         }
 
-        if (!is_array($predefined)) {
-            return $text;
+        return $email->createJob($user, $secondUser, $data);
+    }
+
+    /**
+     * Get filters for searching users
+     *
+     * @return array
+     */
+    public function getFilters(): array
+    {
+        //TODO: Get filters from somewhere in project
+        return [];
+    }
+
+    /**
+     * @return mixed
+     */
+    public function searchQuery()
+    {
+        if (request()->get('receivers', 'users') === 'users') {
+            $query = User::select(['id', 'email']);
+
+            //TODO: Get filters query from somewhere in project
+        } else {
+            $query = Subscriber::select(['user_id', 'email']);
         }
 
-        return str_replace(array_keys($predefined), array_values($predefined), $text);
+        return $query;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function searchReceivers()
+    {
+        $query = $this->searchQuery();
+
+        return datatables()->of($query)->make(true);
     }
 }

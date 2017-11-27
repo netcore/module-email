@@ -2,7 +2,6 @@
 namespace Modules\Email\Traits;
 
 use Illuminate\Foundation\Auth\User;
-use Illuminate\Support\Str;
 
 trait ReplaceVariables {
 
@@ -19,15 +18,11 @@ trait ReplaceVariables {
         $replace         = array_merge($data, $userReplaceable);
         $line            = $this->text;
 
-        foreach ($replace as $key => $value) {
-            $line = str_replace(
-                ['['.$key.']', '['.Str::upper($key).']', '['.Str::ucfirst($key).']'],
-                [$value, Str::upper($value), Str::ucfirst($value)],
-                $line
-            );
-        }
+        return preg_replace_callback($this->config['replace_regex'], function ($match) use ($replace) {
+            $key = isset($match[1]) ? $match[1] : null;
 
-        return $line;
+            return array_get($replace, $key, $match[0]);
+        }, $text);
     }
 
 }
