@@ -1,4 +1,5 @@
 <?php
+
 namespace Modules\Email\Traits;
 
 use Illuminate\Foundation\Auth\User;

@@ -35,7 +35,6 @@
                         <table class="table table-bordered datatable">
                             <thead>
                             <tr>
-                                <th>Name / Surname</th>
                                 <th>Email</th>
                                 <th>Sent?</th>
                                 <th width="10%">Actions</th>
@@ -65,49 +64,41 @@
                     </select>
                 </div>
                 <div class="filters" v-if="receivers === 'users'">
-                    @foreach($filters as $key => $filter)
-                        <div class="form-group">
-                            {!! Form::label($key, $filter['name']) !!}
-                            @if ($filter['type'] == 'select')
-                                <select name="filters[{{ $key }}]" class="form-control select2">
-                                    @foreach ($filter['values'] as $id => $value)
-                                        <option value="{{ $id }}">{{ $value }}</option>
-                                    @endforeach
-                                </select>
-                            @elseif ($filter['type'] == 'multi-select')
-                                <select name="filters[{{ $key }}][]" class="form-control select2" multiple>
-                                    @foreach ($filter['values'] as $id => $value)
-                                        <option value="{{ $id }}">{{ $value }}</option>
-                                    @endforeach
-                                </select>
-                            @elseif ($filter['type'] == 'from-to')
-                                <div class="input-group">
-                                    <input type="{{ isset($filter['field_type']) ? $filter['field_type'] : 'text' }}"
-                                           name="filters[{{ $key }}][from]"
-                                           class="form-control {{ isset($filter['class']) ? $filter['class'] : '' }}"
-                                           placeholder="From"
-                                           min="0"
-                                            {{ isset($filter['max']) ? 'max=' . $filter['max'] : '' }}
-                                            {{ isset($filter['step']) ? 'step=' . $filter['step'] : '' }}
-                                    >
-                                    <span class="input-group-addon">-</span>
-                                    <input type="{{ isset($filter['field_type']) ? $filter['field_type'] : 'text' }}"
-                                           name="filters[{{ $key }}][to]"
-                                           class="form-control {{ isset($filter['class']) ? $filter['class'] : '' }}"
-                                           placeholder="To"
-                                           min="0"
-                                            {{ isset($filter['max']) ? 'max=' . $filter['max'] : '' }}
-                                            {{ isset($filter['step']) ? 'step=' . $filter['step'] : '' }}
-                                    >
-                                </div>
-                            @elseif ($filter['type'] == 'text')
-                                <input type="text" name="filters[{{ $key }}]" class="form-control"/>
-                            @endif
-                        </div>
-                    @endforeach
+                    <div v-for="(filter, key) in filters" class="form-group">
+                        <label v-text="filter.name"></label>
+                        <template v-if="filter.type === 'select'">
+                            <select2
+                                    :data="filter.values"
+                                    :name="'filters['+key+']'"
+                                    :placeholder="'Please select'"
+                            ></select2>
+                        </template>
+                        <template v-if="filter.type === 'multi-select'">
+                            <select2
+                                    :data="filter.values"
+                                    :name="'filters['+key+'][]'"
+                                    :placeholder="'Please select'"
+                                    :multiple="true"
+                            ></select2>
+                        </template>
+                        <template v-if="filter.type === 'from-to'">
+                            <input type="text"
+                                   :name="'filters['+key+'][from]'"
+                                   class="form-control"
+                                   placeholder="From"
+                            >
+                            <span class="input-group-addon">-</span>
+                            <input type="text"
+                                   :name="'filters['+key+'][to]'"
+                                   class="form-control"
+                                   placeholder="To"
+                            >
+                        </template>
+                    </div>
                 </div>
                 <br/>
-                <button type="button" class="btn btn-md btn-primary pull-right" @click="searchReceivers">
+                <button type="button" class="btn btn-md btn-primary pull-right" @click="searchReceivers"
+                        v-if="filters.length || receivers === 'subscribers'">
                     <i class="fa fa-search"></i> Search
                 </button>
             </div>
@@ -126,8 +117,7 @@
                             <thead>
                             <tr>
                                 <th width="2%">#</th>
-                                <th width="50%">Name / Surname</th>
-                                <th width="25%">Email</th>
+                                <th width="98%">Email</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -141,13 +131,12 @@
     </div>
 </div>
 
-@section('styles')
-@endsection
-
 @section('scripts')
     <script>
         var search_url = '{{ route('admin::campaigns.search-receivers') }}';
         var receivers_url = '{{ isset($campaign) ? route('admin::campaigns.get-receivers', $campaign) : '' }}';
+        var filters = '{{ json_encode($filters) }}';
+        filters = JSON.parse(filters.replace(/&quot;/g, '"'));
     </script>
     <script src="{{ versionedAsset('assets/email/admin/js/campaigns_form.js') }}"></script>
 @endsection

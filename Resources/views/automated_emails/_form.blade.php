@@ -16,7 +16,7 @@
             <div class="form-group{{ $errors->has('translations.' . $language->iso_code . '.text') ? ' has-error' : '' }}">
                 <label class="col-md-2 control-label">Text</label>
                 <div class="col-md-8">
-                    {!! Form::textarea('translations['.$language->iso_code.'][text]', trans_model(isset($automatedEmail) ? $automatedEmail : null, $language, 'text'), ['class' => 'form-control']) !!}
+                    {!! Form::textarea('translations['.$language->iso_code.'][text]', trans_model(isset($automatedEmail) ? $automatedEmail : null, $language, 'text'), ['class' => 'summernote']) !!}
                 </div>
             </div>
         </div>
@@ -44,3 +44,7 @@
         {!! Form::checkbox('is_active', null, null) !!}
     </div>
 </div>
+
+@section('scripts')
+    <script src="{{ versionedAsset('assets/email/admin/js/automated_emails_form.js') }}"></script>
+@endsection

@@ -3,17 +3,18 @@ new Vue({
 
     data: {
         except: [],
-        filters: [],
-        receivers: ''
+        filters: filters,
+        receivers: 'users'
     },
 
     methods: {
         searchReceivers() {
-            this.filters = $('.form-horizontal').find('.filter-data :input').serializeArray();
+            var data = $('.form-horizontal').find('.filter-data :input').serializeArray();
+
             $.ajax({
                 type: 'POST',
                 url: search_url,
-                data: this.filters,
+                data: data,
                 success: function (response) {
                     this.populateDataTable(response.data);
                 }.bind(this),
@@ -34,7 +35,6 @@ new Vue({
                             return '<input type=checkbox name=found[] value=' + row.email + ' class=except checked>';
                         },
                     },
-                    {'data': 'full_name'},
                     {'data': 'email'}
                 ],
                 'columnDefs': {
@@ -72,7 +72,6 @@ if (receivers_url) {
         responsive: true,
         order: [[0, 'asc']],
         columns: [
-            {data: 'user', name: 'user'},
             {data: 'email', name: 'email'},
             {data: 'sent', name: 'is_sent'},
             {
@@ -100,3 +99,18 @@ function removeReceiver(email) {
 
     exceptInput.val(JSON.stringify(except));
 }
+
+$('.summernote').summernote({
+    height: 300,
+    focus: true,
+    toolbar: [
+        ['style', ['bold', 'italic', 'underline', 'clear']],
+        ['fontsize', ['fontsize']],
+        ['color', ['color']],
+        ['style', ['style']],
+        ['para', ['ul', 'ol', 'paragraph']],
+        ['height', ['height']],
+        ['insert', ['picture', 'link']]
+    ],
+    fontSizes: ['10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24']
+});

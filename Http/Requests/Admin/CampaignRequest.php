@@ -31,10 +31,6 @@ class CampaignRequest extends FormRequest
             $rules['translations.' . $language->iso_code . '.text'] = 'required';
         }
 
-        if (!$this->campaign) {
-            $rules['users'] = 'required';
-        }
-
         return $rules;
     }
 
