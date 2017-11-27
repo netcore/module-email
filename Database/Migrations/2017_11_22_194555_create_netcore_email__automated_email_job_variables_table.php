@@ -18,9 +18,8 @@ class CreateNetcoreEmailAutomatedEmailJobVariablesTable extends Migration
 
             $table->unsignedInteger('automated_email_job_id');
 
-            $table->string('key');
+            $table->string('key')->index();
             $table->string('value');
-
 
             $table->foreign('automated_email_job_id', 'automated_email_job_variables_automated_email_jobs_foreign')
                   ->references('id')

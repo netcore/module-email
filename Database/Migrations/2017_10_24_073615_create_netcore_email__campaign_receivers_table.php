@@ -18,7 +18,7 @@ class CreateNetcoreEmailCampaignReceiversTable extends Migration
 
             $table->unsignedInteger('campaign_id');
             $table->unsignedInteger('user_id')->nullable();
-            $table->string('email');
+            $table->string('email')->index();
             $table->boolean('is_sent')->default(0);
 
             $table->timestamp('sent_at')->nullable();

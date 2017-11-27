@@ -21,7 +21,6 @@ class CreateNetcoreEmailAutomatedEmailJobsTable extends Migration
             $table->unsignedInteger('other_user_id')->nullable();
             $table->timestamp('send_at')->nullable();
             $table->timestamps();
-            $table->softDeletes();
 
             $table->foreign('automated_email_id')->references('id')->on('netcore_email__automated_emails')->onDelete('cascade');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
