@@ -201,16 +201,14 @@ class AutomatedEmail extends Model
 
     /**
      * @param       $user
-     * @param null  $secondUser
      * @param array $variables
      * @return Model
      */
-    public function createJob($user, $secondUser = null, $variables = []): Model
+    public function createJob($user, $variables = []): Model
     {
         $job = $this->jobs()->create([
-            'user_id'       => $user->id,
-            'other_user_id' => $secondUser ? $secondUser->id : null,
-            'send_at'       => $this->getPeriod('add')
+            'user_id' => $user->id,
+            'send_at' => $this->getPeriod('add')
         ]);
 
         foreach ($variables as $key => $value) {

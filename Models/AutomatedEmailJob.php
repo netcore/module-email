@@ -20,7 +20,6 @@ class AutomatedEmailJob extends Model
      */
     protected $fillable = [
         'user_id',
-        'other_user_id',
         'send_at'
     ];
 
@@ -47,14 +46,6 @@ class AutomatedEmailJob extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(config('netcore.module-admin.user.model'));
-    }
-
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function otherUser(): BelongsTo
-    {
-        return $this->belongsTo(config('netcore.module-admin.user.model'), 'other_user_id');
     }
 
     /**

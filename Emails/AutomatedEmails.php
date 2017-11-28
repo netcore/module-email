@@ -24,11 +24,6 @@ class AutomatedEmails extends Mailable
     public $user;
 
     /**
-     * @var User
-     */
-    public $secondUser;
-
-    /**
      * @var \Illuminate\Config\Repository|mixed
      */
     public $config;
@@ -48,7 +43,6 @@ class AutomatedEmails extends Mailable
     {
         $this->automatedEmail = $job->automatedEmail;
         $this->user           = $user;
-        $this->secondUser     = $job->secondUser;
         $this->config         = config('netcore.module-email');
         $this->variables      = $job ? $job->variable_list : [];
     }

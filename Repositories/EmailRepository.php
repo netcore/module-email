@@ -60,18 +60,17 @@ class EmailRepository
     /**
      * @param       $key
      * @param       $user
-     * @param null  $secondUser
      * @param array $data
      * @return mixed
      */
-    public function send($key, $user, $secondUser = null, $data = [])
+    public function send($key, $user, $data = [])
     {
         $email = AutomatedEmail::where('key', $key)->first();
         if (!$email) {
             return false;
         }
 
-        return $email->createJob($user, $secondUser, $data);
+        return $email->createJob($user, $data);
     }
 
     /**
