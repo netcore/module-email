@@ -47,7 +47,7 @@ class CampaignController extends Controller
      * @param  CampaignRequest $request
      * @return Response
      */
-    public function store(Request $request)
+    public function store(CampaignRequest $request)
     {
         $campaign = Campaign::create([]);
         $campaign->storeTranslations($request->get('translations', []));
@@ -202,6 +202,6 @@ class CampaignController extends Controller
             return view('email::campaigns.tds.sent', compact('receiver'))->render();
         })->addColumn('actions', function ($receiver) use ($campaign) {
             return view('email::campaigns.tds.actions', compact('campaign', 'receiver'))->render();
-        })->rawColumns(['actions'])->make(true);
+        })->rawColumns(['sent', 'actions'])->make(true);
     }
 }

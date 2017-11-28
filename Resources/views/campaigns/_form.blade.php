@@ -36,7 +36,7 @@
                             <thead>
                             <tr>
                                 <th>Email</th>
-                                <th>Sent?</th>
+                                <th class="text-center" width="10%">Sent?</th>
                                 <th width="10%">Actions</th>
                             </tr>
                             </thead>
@@ -51,7 +51,7 @@
 @endif
 
 <div class="row">
-    <div class="col-lg-3">
+    <div class="col-lg-4">
         <div class="panel panel-inverse">
             <div class="panel-heading">
                 <i class="fa fa-search"></i> Search users
@@ -59,53 +59,59 @@
             <div class="panel-body filter-data">
                 <div class="form-group">
                     <select name="receivers" class="form-control" v-model="receivers">
+                        <option value="all-users">All users</option>
                         <option value="users">Filter users</option>
                         <option value="subscribers">Subscribers</option>
                     </select>
                 </div>
                 <div class="filters" v-if="receivers === 'users'">
-                    <div v-for="(filter, key) in filters" class="form-group">
-                        <label v-text="filter.name"></label>
-                        <template v-if="filter.type === 'select'">
-                            <select2
-                                    :data="filter.values"
-                                    :name="'filters['+key+']'"
-                                    :placeholder="'Please select'"
-                            ></select2>
-                        </template>
-                        <template v-if="filter.type === 'multi-select'">
-                            <select2
-                                    :data="filter.values"
-                                    :name="'filters['+key+'][]'"
-                                    :placeholder="'Please select'"
-                                    :multiple="true"
-                            ></select2>
-                        </template>
-                        <template v-if="filter.type === 'from-to'">
-                            <input type="text"
-                                   :name="'filters['+key+'][from]'"
-                                   class="form-control"
-                                   placeholder="From"
-                            >
-                            <span class="input-group-addon">-</span>
-                            <input type="text"
-                                   :name="'filters['+key+'][to]'"
-                                   class="form-control"
-                                   placeholder="To"
-                            >
-                        </template>
+                    <div v-if="Object.keys(filters).length">
+                        <div v-for="(filter, key) in filters" class="form-group">
+                            <label v-text="filter.name"></label>
+                            <template v-if="filter.type === 'select'">
+                                <select2
+                                        :data="filter.values"
+                                        :name="'filters['+key+']'"
+                                        :placeholder="'Please select'"
+                                ></select2>
+                            </template>
+                            <template v-if="filter.type === 'multi-select'">
+                                <select2
+                                        :data="filter.values"
+                                        :name="'filters['+key+'][]'"
+                                        :placeholder="'Please select'"
+                                        :multiple="true"
+                                ></select2>
+                            </template>
+                            <template v-if="filter.type === 'from-to'">
+                                <input type="text"
+                                       :name="'filters['+key+'][from]'"
+                                       class="form-control"
+                                       placeholder="From"
+                                >
+                                <span class="input-group-addon">-</span>
+                                <input type="text"
+                                       :name="'filters['+key+'][to]'"
+                                       class="form-control"
+                                       placeholder="To"
+                                >
+                            </template>
+                        </div>
                     </div>
+                    <div class="v-cloak--hidden" v-else>No filters!</div>
                 </div>
-                <br/>
-                <button type="button" class="btn btn-md btn-primary pull-right" @click="searchReceivers"
-                        v-if="filters.length || receivers === 'subscribers'">
-                    <i class="fa fa-search"></i> Search
-                </button>
+
+                <div class="form-group"
+                     v-if="Object.keys(filters).length || receivers === 'all-users' || receivers === 'subscribers'">
+                    <button type="button" class="btn btn-md btn-primary pull-right" @click="searchReceivers">
+                        <i class="fa fa-search"></i> Search
+                    </button>
+                </div>
             </div>
         </div>
 
     </div>
-    <div class="col-lg-9">
+    <div class="col-lg-8">
         <div class="panel panel-inverse">
             <div class="panel-heading">
                 <i class="fa fa-users"></i> Found users

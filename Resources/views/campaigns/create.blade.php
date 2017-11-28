@@ -25,7 +25,7 @@
                     </div>
                     <h4 class="panel-title">Create campaign</h4>
                 </div>
-                <div class="panel-body" id="emailApp">
+                <div class="panel-body" id="emailApp" v-cloak>
                     {!! Form::open(['route' => 'admin::campaigns.store', 'class' => 'form-horizontal']) !!}
 
                     @include('email::campaigns._form')

@@ -4,44 +4,37 @@ new Vue({
     data: {
         except: [],
         filters: filters,
-        receivers: 'users'
+        receivers: 'all-users'
     },
 
     methods: {
         searchReceivers() {
-            var data = $('.form-horizontal').find('.filter-data :input').serializeArray();
 
-            $.ajax({
-                type: 'POST',
-                url: search_url,
-                data: data,
-                success: function (response) {
-                    this.populateDataTable(response.data);
-                }.bind(this),
-                error: function (e) {
-                    console.log("error: " + JSON.stringify(e.responseText));
-                }
-            });
-        },
+            if (!this.filters) {
+                return;
+            }
 
-        populateDataTable(data) {
+            var filters = $('.form-horizontal').find('.filter-data :input').serializeArray();
+
             $('.search').DataTable().destroy();
             $('.search').DataTable({
+                processing: true,
+                serverSide: true,
                 'responsive': true,
-                'aaData': data,
+                'ajax': {
+                    url: search_url,
+                    type: 'POST',
+                    data: filters
+                },
                 'columns': [
-                    {
-                        'data': function (row, type, val, meta) {
-                            return '<input type=checkbox name=found[] value=' + row.email + ' class=except checked>';
-                        },
-                    },
-                    {'data': 'email'}
+                    {'data': 'checkbox'},
+                    {'data': 'email', 'name': 'email'}
                 ],
                 'columnDefs': {
                     orderable: false, targets: 0
                 }
             });
-        },
+        }
     }
 });
 
@@ -73,7 +66,7 @@ if (receivers_url) {
         order: [[0, 'asc']],
         columns: [
             {data: 'email', name: 'email'},
-            {data: 'sent', name: 'is_sent'},
+            {data: 'sent', name: 'is_sent', class: 'text-center'},
             {
                 data: 'actions',
                 name: 'actions',

@@ -13,11 +13,17 @@ class EmailRepository
     protected $config;
 
     /**
+     * @var \Illuminate\Config\Repository|mixed
+     */
+    protected $userModel;
+
+    /**
      * EmailRepository constructor.
      */
     public function __construct()
     {
         $this->config = config('netcore.module-email');
+        $this->userModel = config('netcore.module-admin.user.model');
     }
 
     /**
@@ -75,8 +81,7 @@ class EmailRepository
      */
     public function getFilters(): array
     {
-        //TODO: Get filters from somewhere in project
-        return [];
+        return method_exists($this->userModel, 'getFilters') ? (new $this->userModel)->getFilters() : [];
     }
 
     /**
@@ -84,12 +89,14 @@ class EmailRepository
      */
     public function searchQuery()
     {
-        if (request()->get('receivers', 'users') === 'users') {
-            $query = User::select(['id', 'email']);
+        $receivers = request()->get('receivers', 'users');
 
-            //TODO: Get filters query from somewhere in project
+        if ($receivers === 'all-users') {
+            $query = $this->userModel::select(['id', 'email']);
+        } elseif ($receivers === 'users') {
+            $query = method_exists($this->userModel, 'getFilterQuery') ? (new $this->userModel)->getFilterQuery() : '';
         } else {
-            $query = Subscriber::select(['user_id', 'email']);
+            $query = Subscriber::select(['email']);
         }
 
         return $query;
@@ -102,6 +109,8 @@ class EmailRepository
     {
         $query = $this->searchQuery();
 
-        return datatables()->of($query)->make(true);
+        return datatables()->of($query)->addColumn('checkbox', function ($receiver) {
+            return view('email::campaigns.tds.checkbox', compact('receiver'))->render();
+        })->rawColumns(['checkbox'])->make(true);
     }
 }

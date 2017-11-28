@@ -25,7 +25,7 @@
                     </div>
                     <h4 class="panel-title">Edit campaign</h4>
                 </div>
-                <div class="panel-body" id="emailApp">
+                <div class="panel-body" id="emailApp" v-cloak>
                     {!! Form::model($campaign, ['route' => ['admin::campaigns.update', $campaign], 'method' => 'PATCH', 'class' => 'form-horizontal']) !!}
 
                     @include('email::campaigns._form')
