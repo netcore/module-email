@@ -67,13 +67,14 @@
                 <div class="filters" v-if="receivers === 'users'">
                     <hr>
                     <div v-if="Object.keys(filters).length">
-                        <div v-for="(filter, key) in filtersObject" class="form-group">
+                        <div v-for="(filter, key) in filters" class="form-group">
                             <label v-text="filter.name"></label>
                             <template v-if="filter.type === 'select'">
                                 <select2
                                         :data="filter.values"
                                         :name="'filters['+key+']'"
                                         :placeholder="'Please select'"
+                                        v-model="values[key]"
                                 ></select2>
                             </template>
                             <template v-if="filter.type === 'multi-select'">
@@ -82,6 +83,7 @@
                                         :name="'filters['+key+'][]'"
                                         :placeholder="'Please select'"
                                         :multiple="true"
+                                        v-model="values[key]"
                                 ></select2>
                             </template>
                             <template v-if="filter.type === 'from-to'">
@@ -89,12 +91,14 @@
                                        :name="'filters['+key+'][from]'"
                                        class="form-control"
                                        placeholder="From"
+                                       v-model="values[key].from"
                                 >
                                 <span class="input-group-addon">-</span>
                                 <input type="text"
                                        :name="'filters['+key+'][to]'"
                                        class="form-control"
                                        placeholder="To"
+                                       v-model="values[key].to"
                                 >
                             </template>
                         </div>
@@ -136,14 +140,15 @@
             </div>
         </div>
     </div>
+
+    <input id="filters-json" type="hidden" value="{{$filters->toJson()}}">
 </div>
 
 @section('scripts')
     <script>
         var search_url = '{{ route('admin::campaigns.search-receivers') }}';
         var receivers_url = '{{ isset($campaign) ? route('admin::campaigns.get-receivers', $campaign) : '' }}';
-        var filters = '{!! $filters->toJson() !!}';
-        filters = JSON.parse(filters.replace(/&quot;/g, '"'));
+        var filters = JSON.parse(jQuery('#filters-json').val());
     </script>
     <script src="{{ versionedAsset('assets/email/admin/js/campaigns_form.js') }}"></script>
 @endsection

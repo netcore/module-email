@@ -4,29 +4,41 @@ new Vue({
     data: {
         except: [],
         filters: filters,
+        values: {},
         receivers: 'all-users'
     },
 
-    computed: {
-        filtersObject: function () {
-            this.filters.forEach(function (key, filter) {
-                var newValues = [];
-                filter.values.forEach(function (key, value) {
-                    newValues.push({
-                        id: key,
-                        text: value
-                    });
-                })
+    created(){
+        var self = this;
 
-                filter.values = newValues;
+        jQuery.each(this.filters, function (key, filter) {
+            var newValues = [];
+            jQuery.each(filter.values, function (subKey, value) {
+                newValues.push({
+                    id: subKey,
+                    text: value
+                });
             });
 
-            return this.filters;
-        }
+            filter.values = newValues;
+
+            if(filter.type === 'select'){
+                self.values[key] = '';
+            } else if(filter.type === 'multi-select'){
+                self.values[key] = [];
+            } else if(filter.type === 'from-to'){
+                self.values[key] = {
+                    from: '',
+                    to: ''
+                };
+            }
+        });
     },
 
     methods: {
         searchReceivers() {
+            var self = this;
+
             $('.search-table').DataTable().destroy();
             $('.search-table').DataTable({
                 'processing': true,
@@ -35,7 +47,10 @@ new Vue({
                 'ajax': {
                     url: search_url,
                     type: 'POST',
-                    data: $('.form-horizontal').find('.filter-data :input').serializeArray()
+                    data: {
+                        receivers: self.receivers,
+                        filters: self.values
+                    }
                 },
                 'columns': [
                     {'data': 'checkbox'},
