@@ -17,6 +17,5 @@ class EmailDatabaseSeeder extends Seeder
         Model::unguard();
 
         $this->call(MenuTableSeeder::class);
-        $this->call(SettingTableSeeder::class);
     }
 }
