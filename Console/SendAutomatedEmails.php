@@ -39,6 +39,7 @@ class SendAutomatedEmails extends Command
      */
     public function handle()
     {
+        // Emails sending every x time
         foreach (AutomatedEmail::period()->active()->get() as $email) {
             if (!$email->checkPeriod()) {
                 continue;
@@ -56,6 +57,7 @@ class SendAutomatedEmails extends Command
                         'type'    => 'error',
                         'message' => $e->getMessage()
                     ]);
+                    \Log::error($e);
                 }
             }
 
@@ -65,31 +67,44 @@ class SendAutomatedEmails extends Command
             ]);
         }
 
-        foreach (AutomatedEmail::without('translations')->static()->active()->get() as $email) {
+        // Emails sending once after x time
+        foreach (AutomatedEmail::interval()->active()->get() as $email) {
+            foreach ($email->getUsers() as $user) {
+                try {
+                    $email->sendTo($user);
+                } catch (\Exception $e) {
+                    $email->logs()->create([
+                        'email'   => $user->email,
+                        'type'    => 'error',
+                        'message' => $e->getMessage()
+                    ]);
+                    \Log::error($e);
+                }
+            }
 
+            $email->update([
+                'last_user_id' => null
+            ]);
+        }
+
+        // Emails sending once right away or after x time
+        foreach (AutomatedEmail::static()->active()->get() as $email) {
             foreach ($email->jobs as $job) {
-
                 if ($email->now() || $job->send_at->lte(Carbon::now())) {
 
                     try {
-
                         $email->sendTo($job->user, $job);
                         $job->delete();
-
                     } catch (\Exception $e) {
-
                         $email->logs()->create([
                             'email'   => $job->user->email,
                             'type'    => 'error',
                             'message' => $e->getMessage()
                         ]);
-
+                        \Log::error($e);
                     }
-
                 }
-
             }
-
         }
     }
 }

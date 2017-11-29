@@ -114,6 +114,15 @@ class AutomatedEmail extends Model
         return $query->where('type', 'static');
     }
 
+    /**
+     * @param $query
+     * @return mixed
+     */
+    public function scopeInterval($query)
+    {
+        return $query->where('type', 'interval');
+    }
+
     /* ---------------- Other methods -------------------- */
 
     /**
@@ -135,6 +144,14 @@ class AutomatedEmail extends Model
     /**
      * @return bool
      */
+    public function isInterval(): bool
+    {
+        return $this->type === 'interval';
+    }
+
+    /**
+     * @return bool
+     */
     public function now(): bool
     {
         return $this->period === 'now';
@@ -145,13 +162,19 @@ class AutomatedEmail extends Model
      */
     public function getUsers()
     {
-        $users = collect();
+        $userModel = config('netcore.module-admin.user.model');
 
-        // TODO: Get users
-        $users = User::getQuery();
-        foreach ($this->filters as $v) {
-            foreach ($v as $t => $q) {
-                $users->{$t}(implode('', $q));
+        $users = $userModel::select('*');
+
+        if ($this->isInterval()) {
+            $users->whereRaw('DATE_ADD(created_at, ' . $this->getInterval() . ') BETWEEN DATE_SUB(NOW(), INTERVAL 1 MINUTE) AND NOW()');
+        }
+
+        if ($this->filters) {
+            foreach ($this->filters as $clauses) {
+                foreach ($clauses as $clause => $query) {
+                    $users->{$clause}(is_array($query) ? implode('', $query) : $query);
+                }
             }
         }
 
@@ -200,6 +223,23 @@ class AutomatedEmail extends Model
     }
 
     /**
+     * @return string
+     */
+    public function getInterval(): string
+    {
+        $number = intval(preg_replace('/[^0-9]+/', '', $this->period), 10);
+        $period = substr($this->period, -1); // h, m, d etc.
+        $array = [
+            'd' => 'DAY',
+            'w' => 'WEEK',
+            'm' => 'MONTH',
+            'y' => 'YEAR'
+        ];
+
+        return 'INTERVAL ' . $number . ' ' . array_get($array, $period, 'DAY');
+    }
+
+    /**
      * @param       $user
      * @param array $variables
      * @return Model
@@ -229,7 +269,7 @@ class AutomatedEmail extends Model
      */
     public function sendTo(User $user, $job = null): void
     {
-        Mail::to($user->email)->send(new AutomatedEmails($user, $job));
+        Mail::to($user->email)->send(new AutomatedEmails($this, $user, $job));
 
         $this->logs()->create([
             'email' => $user->email,
@@ -245,7 +285,6 @@ class AutomatedEmail extends Model
     private function getMethod($period, $action)
     {
         $array = [
-            'h' => $action === 'sub' ? 'subHours' : 'addHours',
             'd' => $action === 'sub' ? 'subDays' : 'addDays',
             'w' => $action === 'sub' ? 'subWeeks' : 'addWeeks',
             'm' => $action === 'sub' ? 'subMonthsNoOverflow' : 'addMonthsNoOverflow',

@@ -73,6 +73,7 @@ class SendEmailCampaign extends Command
                     'type'    => 'error',
                     'message' => $e->getMessage()
                 ]);
+                \Log::error($e);
                 exit;
             }
 

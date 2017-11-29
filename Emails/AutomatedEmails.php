@@ -36,12 +36,13 @@ class AutomatedEmails extends Mailable
     /**
      * AutomatedEmails constructor.
      *
-     * @param User $user
-     * @param $job
+     * @param AutomatedEmail $automatedEmail
+     * @param User           $user
+     * @param null           $job
      */
-    public function __construct(User $user, $job)
+    public function __construct(AutomatedEmail $automatedEmail, User $user, $job = null)
     {
-        $this->automatedEmail = $job->automatedEmail;
+        $this->automatedEmail = $automatedEmail;
         $this->user           = $user;
         $this->config         = config('netcore.module-email');
         $this->variables      = $job ? $job->variable_list : [];

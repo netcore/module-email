@@ -7,24 +7,35 @@ new Vue({
         receivers: 'all-users'
     },
 
+    computed: {
+        filtersObject: function () {
+            this.filters.forEach(function (key, filter) {
+                var newValues = [];
+                filter.values.forEach(function (key, value) {
+                    newValues.push({
+                        id: key,
+                        text: value
+                    });
+                })
+
+                filter.values = newValues;
+            });
+
+            return this.filters;
+        }
+    },
+
     methods: {
         searchReceivers() {
-
-            if (!this.filters) {
-                return;
-            }
-
-            var filters = $('.form-horizontal').find('.filter-data :input').serializeArray();
-
-            $('.search').DataTable().destroy();
-            $('.search').DataTable({
-                processing: true,
-                serverSide: true,
+            $('.search-table').DataTable().destroy();
+            $('.search-table').DataTable({
+                'processing': true,
+                'serverSide': true,
                 'responsive': true,
                 'ajax': {
                     url: search_url,
                     type: 'POST',
-                    data: filters
+                    data: $('.form-horizontal').find('.filter-data :input').serializeArray()
                 },
                 'columns': [
                     {'data': 'checkbox'},
@@ -34,6 +45,10 @@ new Vue({
                     orderable: false, targets: 0
                 }
             });
+        },
+
+        changeReceivers() {
+            $('.search-table').DataTable().clear().draw();
         }
     }
 });
@@ -41,7 +56,7 @@ new Vue({
 var exceptInput = $('input[name=except]');
 var except = [];
 
-$('.search').DataTable({
+$('.search-table').DataTable({
     'columnDefs': {
         orderable: false, targets: 0
     }
@@ -58,7 +73,7 @@ $(document).on('change', '.except', function () {
 });
 
 if (receivers_url) {
-    $('.datatable').DataTable({
+    $('.receivers-table').DataTable({
         processing: true,
         serverSide: true,
         ajax: receivers_url,

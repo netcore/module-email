@@ -32,7 +32,7 @@
                 </div>
                 <div class="panel-body">
                     <div class="table-primary">
-                        <table class="table table-bordered datatable">
+                        <table class="table table-bordered receivers-table">
                             <thead>
                             <tr>
                                 <th>Email</th>
@@ -58,15 +58,16 @@
             </div>
             <div class="panel-body filter-data">
                 <div class="form-group">
-                    <select name="receivers" class="form-control" v-model="receivers">
+                    <select name="receivers" class="form-control" v-model="receivers" @change="changeReceivers()">
                         <option value="all-users">All users</option>
                         <option value="users">Filter users</option>
                         <option value="subscribers">Subscribers</option>
                     </select>
                 </div>
                 <div class="filters" v-if="receivers === 'users'">
+                    <hr>
                     <div v-if="Object.keys(filters).length">
-                        <div v-for="(filter, key) in filters" class="form-group">
+                        <div v-for="(filter, key) in filtersObject" class="form-group">
                             <label v-text="filter.name"></label>
                             <template v-if="filter.type === 'select'">
                                 <select2
@@ -119,7 +120,7 @@
             <div class="panel-body">
                 <div class="form-group">
                     <div class="table-primary">
-                        <table class="table table-bordered search">
+                        <table class="table table-bordered search-table">
                             <thead>
                             <tr>
                                 <th width="2%">#</th>
@@ -141,7 +142,7 @@
     <script>
         var search_url = '{{ route('admin::campaigns.search-receivers') }}';
         var receivers_url = '{{ isset($campaign) ? route('admin::campaigns.get-receivers', $campaign) : '' }}';
-        var filters = '{{ json_encode($filters) }}';
+        var filters = '{!! $filters->toJson() !!}';
         filters = JSON.parse(filters.replace(/&quot;/g, '"'));
     </script>
     <script src="{{ versionedAsset('assets/email/admin/js/campaigns_form.js') }}"></script>

@@ -2,6 +2,7 @@
 
 namespace Modules\Email\Repositories;
 
+use Illuminate\Support\Collection;
 use Modules\Email\Models\AutomatedEmail;
 use Modules\Email\Models\Subscriber;
 
@@ -76,11 +77,13 @@ class EmailRepository
     /**
      * Get filters for searching users
      *
-     * @return array
+     * @return Collection
      */
-    public function getFilters(): array
+    public function getFilters(): Collection
     {
-        return method_exists($this->userModel, 'getFilters') ? (new $this->userModel)->getFilters() : [];
+        $filters = method_exists($this->userModel, 'getFilters') ? (new $this->userModel)->getFilters() : [];
+
+        return collect($filters);
     }
 
     /**
