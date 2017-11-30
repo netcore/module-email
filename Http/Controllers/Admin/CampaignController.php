@@ -134,7 +134,7 @@ class CampaignController extends Controller
      */
     public function destroyReceiver(Campaign $campaign, CampaignReceiver $receiver)
     {
-        $receiver = $campaign->receivers()->find($receiver);
+        $receiver = $campaign->receivers()->find($receiver->id);
 
         if (!$receiver) {
             return response()->json([
@@ -194,9 +194,9 @@ class CampaignController extends Controller
      */
     public function getReceivers(Campaign $campaign)
     {
-        // TODO: dont use collection
-        $campaign->receivers->load('user');
-        return datatables()->of($campaign->receivers)->addColumn('user', function ($receiver) {
+        $receivers = CampaignReceiver::select('id', 'email', 'is_sent')->where('campaign_id', $campaign->id);
+
+        return datatables()->of($receivers)->addColumn('user', function ($receiver) {
             return view('email::campaigns.tds.user', compact('receiver'))->render();
         })->addColumn('sent', function ($receiver) {
             return view('email::campaigns.tds.sent', compact('receiver'))->render();
