@@ -7,6 +7,10 @@ Route::group([
     'namespace'  => 'Modules\Email\Http\Controllers\Admin'
 ], function () {
     Route::resource('automated_emails', 'AutomatedEmailController', ['only' => ['index', 'edit', 'update']]);
+    Route::get('/automated_emails/{automated_email}/preview', [
+        'uses' => 'AutomatedEmailController@preview',
+        'as'   => 'automated_emails.preview'
+    ]);
 
     Route::resource('campaigns', 'CampaignController', ['except' => ['show']]);
     Route::get('/campaigns/{campaign}/start', [
@@ -28,6 +32,11 @@ Route::group([
     Route::delete('/campaigns/{campaign}/{receiver}/delete', [
         'uses' => 'CampaignController@destroyReceiver',
         'as'   => 'campaigns.destroy-receiver'
+    ]);
+
+    Route::get('/campaigns/{campaign}/preview', [
+        'uses' => 'CampaignController@preview',
+        'as'   => 'campaigns.preview'
     ]);
 
     Route::resource('subscribers', 'SubscriberController', ['only' => ['index', 'destroy']]);

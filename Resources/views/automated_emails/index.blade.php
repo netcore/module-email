@@ -38,6 +38,10 @@
                                         @endforeach
                                     </td>
                                     <td width="15%" class="text-center">
+                                        <a href="{{ route('admin::automated_emails.preview', $automatedEmail) }}"
+                                           class="btn btn-xs btn-default">
+                                            <i class="fa fa-eye"></i> Preview
+                                        </a>
                                         <a href="{{ route('admin::automated_emails.edit', $automatedEmail) }}"
                                            class="btn btn-xs btn-primary">
                                             <i class="fa fa-edit"></i> Edit

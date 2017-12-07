@@ -5,6 +5,7 @@ namespace Modules\Email\Http\Controllers\Admin;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
+use Modules\Email\Emails\AutomatedEmails;
 use Modules\Email\Http\Requests\Admin\AutomatedEmailRequest;
 use Modules\Email\Models\AutomatedEmail;
 
@@ -58,5 +59,14 @@ class AutomatedEmailController extends Controller
         $automatedEmail->updateTranslations($request->get('translations', []));
 
         return back()->withSuccess('Successfully saved');
+    }
+
+    /**
+     * @param AutomatedEmail $automatedEmail
+     * @return AutomatedEmails
+     */
+    public function preview(AutomatedEmail $automatedEmail)
+    {
+        return new AutomatedEmails($automatedEmail, auth()->user());
     }
 }

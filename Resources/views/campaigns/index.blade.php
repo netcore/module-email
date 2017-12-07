@@ -47,6 +47,10 @@
                                         {{ $campaign->getStatus() }}
                                     </td>
                                     <td width="15%" class="text-center">
+                                        <a href="{{ route('admin::campaigns.preview', $campaign) }}"
+                                           class="btn btn-xs btn-default">
+                                            <i class="fa fa-eye"></i> Preview
+                                        </a>
                                         @if ($campaign->inProgress())
                                             <a href="{{ route('admin::campaigns.stop', $campaign) }}"
                                                class="btn btn-warning btn-xs"><i class="fa fa-stop"></i> Stop</a>

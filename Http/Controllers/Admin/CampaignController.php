@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
+use Modules\Email\Emails\CampaignEmail;
 use Modules\Email\Http\Requests\Admin\CampaignRequest;
 use Modules\Email\Models\Campaign;
 use Modules\Email\Models\CampaignReceiver;
@@ -203,5 +204,14 @@ class CampaignController extends Controller
         })->addColumn('actions', function ($receiver) use ($campaign) {
             return view('email::campaigns.tds.actions', compact('campaign', 'receiver'))->render();
         })->rawColumns(['sent', 'actions'])->make(true);
+    }
+
+    /**
+     * @param Campaign $campaign
+     * @return CampaignEmail
+     */
+    public function preview(Campaign $campaign)
+    {
+        return new CampaignEmail($campaign, auth()->user());
     }
 }
