@@ -44,4 +44,8 @@ Route::group([
         'as'   => 'subscribers.pagination',
         'uses' => 'SubscriberController@pagination'
     ]);
+    Route::get('subscribers/export/{type}', [
+        'as'   => 'subscribers.export',
+        'uses' => 'SubscriberController@export'
+    ]);
 });

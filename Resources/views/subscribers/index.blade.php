@@ -18,6 +18,14 @@
         <div class="col-md-12">
             <div class="panel panel-inverse">
                 <div class="panel-heading">
+                    <div class="panel-heading-btn">
+                        <a href="{{ route('admin::subscribers.export', 'xls') }}" class="btn btn-xs btn-success">
+                            <i class="fa fa-file-excel-o"></i> Export (XLS)
+                        </a>
+                        <a href="{{ route('admin::subscribers.export', 'csv') }}" class="btn btn-xs btn-success">
+                            <i class="fa fa-file-o"></i> Export (CSV)
+                        </a>
+                    </div>
                     <h4 class="panel-title">Subscribers</h4>
                 </div>
                 <div class="panel-body">
@@ -26,6 +34,7 @@
                             <thead>
                             <tr>
                                 <th>Email</th>
+                                <th>Subscribed at</th>
                                 <th width="15%" class="text-center">Actions</th>
                             </tr>
                             </thead>
