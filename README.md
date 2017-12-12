@@ -34,6 +34,10 @@ installed:
     $schedule->command('automated-emails:send')->everyMinute();
 ```
 
+- Set queue driver to redis
+
+- In your supervisor configuration set --timeout to 3600 or larger if a project will have large user base to send campaigns to
+
 - Add `Modules\User\Traits\ReplaceableAttributes` trait to your `User` model and set public property `$replaceable` which you want dynamically use in email templates:
 
 ```

@@ -47,10 +47,11 @@
                                         {{ $campaign->getStatus() }}
                                     </td>
                                     <td width="15%" class="text-center">
-                                        <a href="{{ route('admin::campaigns.preview', $campaign) }}"
-                                           class="btn btn-xs btn-default">
+                                        <button type="button" class="btn btn-default btn-xs preview" data-toggle="modal"
+                                                data-target="#previewModal"
+                                                data-url="{{ route('admin::campaigns.preview', $campaign) }}">
                                             <i class="fa fa-eye"></i> Preview
-                                        </a>
+                                        </button>
                                         @if ($campaign->inProgress())
                                             <a href="{{ route('admin::campaigns.stop', $campaign) }}"
                                                class="btn btn-warning btn-xs"><i class="fa fa-stop"></i> Stop</a>
@@ -77,6 +78,8 @@
             </div>
         </div>
     </div>
+
+    @include('email::_partials._preview_modal')
 @endsection
 
 @section('scripts')

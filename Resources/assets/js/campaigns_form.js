@@ -2,13 +2,12 @@ new Vue({
     el: '#emailApp',
 
     data: {
-        except: [],
         filters: filters,
         values: {},
         receivers: 'all-users'
     },
 
-    created(){
+    created: function () {
         var self = this;
 
         jQuery.each(this.filters, function (key, filter) {
@@ -22,11 +21,11 @@ new Vue({
 
             filter.values = newValues;
 
-            if(filter.type === 'select'){
+            if (filter.type === 'select') {
                 self.values[key] = '';
-            } else if(filter.type === 'multi-select'){
+            } else if (filter.type === 'multi-select') {
                 self.values[key] = [];
-            } else if(filter.type === 'from-to'){
+            } else if (filter.type === 'from-to') {
                 self.values[key] = {
                     from: '',
                     to: ''
@@ -36,7 +35,7 @@ new Vue({
     },
 
     methods: {
-        searchReceivers() {
+        searchReceivers: function () {
             var self = this;
 
             $('.search-table').DataTable().destroy();
@@ -53,8 +52,12 @@ new Vue({
                     }
                 },
                 'columns': [
-                    {'data': 'checkbox'},
-                    {'data': 'email', 'name': 'email'}
+                    {
+                        'data': 'checkbox',
+                        searchable: false,
+                        orderable: false
+                    },
+                    {'data': 'email'}
                 ],
                 'columnDefs': {
                     orderable: false, targets: 0
@@ -62,14 +65,23 @@ new Vue({
             });
         },
 
-        changeReceivers() {
-            $('.search-table').DataTable().clear().draw();
+        resetReceivers: function () {
+            $('.search-table').DataTable().destroy();
+            $('.search-table tbody tr').remove();
+            $('.search-table').DataTable({
+                'columnDefs': {
+                    orderable: false, targets: 0
+                }
+            });
+            except = [];
+            exceptInput.val(JSON.stringify(except));
         }
     }
 });
 
-var exceptInput = $('input[name=except]');
+// Variables
 var except = [];
+var exceptInput = $('input[name=except]');
 
 $('.search-table').DataTable({
     'columnDefs': {

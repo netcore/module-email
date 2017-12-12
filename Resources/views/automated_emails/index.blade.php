@@ -38,10 +38,11 @@
                                         @endforeach
                                     </td>
                                     <td width="15%" class="text-center">
-                                        <a href="{{ route('admin::automated_emails.preview', $automatedEmail) }}"
-                                           class="btn btn-xs btn-default">
+                                        <button type="button" class="btn btn-default btn-xs preview" data-toggle="modal"
+                                                data-target="#previewModal"
+                                                data-url="{{ route('admin::automated_emails.preview', $automatedEmail) }}">
                                             <i class="fa fa-eye"></i> Preview
-                                        </a>
+                                        </button>
                                         <a href="{{ route('admin::automated_emails.edit', $automatedEmail) }}"
                                            class="btn btn-xs btn-primary">
                                             <i class="fa fa-edit"></i> Edit
@@ -56,6 +57,8 @@
             </div>
         </div>
     </div>
+
+    @include('email::_partials._preview_modal')
 @endsection
 
 @section('scripts')

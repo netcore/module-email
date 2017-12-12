@@ -58,7 +58,7 @@
             </div>
             <div class="panel-body filter-data">
                 <div class="form-group">
-                    <select name="receivers" class="form-control" v-model="receivers" @change="changeReceivers()">
+                    <select name="receivers" class="form-control" v-model="receivers" @change="resetReceivers()">
                         <option value="all-users">All users</option>
                         <option value="users">Filter users</option>
                         <option value="subscribers">Subscribers</option>
