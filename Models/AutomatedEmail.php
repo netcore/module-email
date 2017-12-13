@@ -178,11 +178,11 @@ class AutomatedEmail extends Model
             }
         }
 
-        $users = $users->get();
+        if (!$this->last_user_id) {
+            return $users;
+        }
 
-        return $users->reject(function ($user) {
-            return $user->id <= $this->last_user_id;
-        });
+        return $users->where('id', '>', $this->last_user_id);
     }
 
     /**

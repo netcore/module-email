@@ -51,38 +51,39 @@ class SendEmailCampaign extends Command
             'status' => 'sending'
         ]);
 
-        $lastEmail = null;
-        foreach ($campaign->receivers()->notSent()->get() as $receiver) {
+        $lastReceiver = null;
+        $campaign->getReceivers()->chunk(100, function ($receivers) use ($campaign, $lastReceiver) {
+            foreach ($receivers as $receiver) {
 
-            // Check for lock file
-            if (!$campaign->lockFileExists()) {
-                $campaign->stop('stopped', $lastEmail);
-                exit;
-            }
+                // Check for lock file
+                if (!$campaign->lockFileExists()) {
+                    $campaign->stop('stopped', $lastReceiver);
+                    exit;
+                }
 
-            try {
-                $campaign->sendTo($receiver);
-                $receiver->update([
-                    'is_sent' => '1',
-                    'sent_at' => Carbon::now()
+                try {
+                    $campaign->sendTo($receiver);
+                    $receiver->update([
+                        'is_sent' => '1',
+                        'sent_at' => Carbon::now()
+                    ]);
+                } catch (\Exception $e) {
+                    $campaign->stop('error', $lastReceiver);
+                    $campaign->logs()->create([
+                        'email'   => $receiver->email,
+                        'type'    => 'error',
+                        'message' => $e->getMessage()
+                    ]);
+                    exit;
+                }
+
+                $lastReceiver = $receiver->id;
+
+                $campaign->update([
+                    'last_email' => $lastReceiver
                 ]);
-            } catch (\Exception $e) {
-                $campaign->stop('error', $lastEmail);
-                $campaign->logs()->create([
-                    'email'   => $receiver->email,
-                    'type'    => 'error',
-                    'message' => $e->getMessage()
-                ]);
-                \Log::error($e);
-                exit;
             }
-
-            $lastEmail = $receiver->email;
-
-            $campaign->update([
-                'last_email' => $lastEmail
-            ]);
-        }
+        });
 
         $campaign->stop('sent');
     }

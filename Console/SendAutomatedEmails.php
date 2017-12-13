@@ -45,21 +45,22 @@ class SendAutomatedEmails extends Command
                 continue;
             }
 
-            foreach ($email->getUsers() as $user) {
-                try {
-                    $email->sendTo($user);
-                    $email->update([
-                        'last_user_id' => $user->id
-                    ]);
-                } catch (\Exception $e) {
-                    $email->logs()->create([
-                        'email'   => $user->email,
-                        'type'    => 'error',
-                        'message' => $e->getMessage()
-                    ]);
-                    \Log::error($e);
+            $email->getUsers()->chunk(100, function ($users) use ($email) {
+                foreach ($users as $user) {
+                    try {
+                        $email->sendTo($user);
+                        $email->update([
+                            'last_user_id' => $user->id
+                        ]);
+                    } catch (\Exception $e) {
+                        $email->logs()->create([
+                            'email'   => $user->email,
+                            'type'    => 'error',
+                            'message' => $e->getMessage()
+                        ]);
+                    }
                 }
-            }
+            });
 
             $email->update([
                 'last_sent_at' => Carbon::now(),
@@ -69,18 +70,19 @@ class SendAutomatedEmails extends Command
 
         // Emails sending once after x time
         foreach (AutomatedEmail::interval()->active()->get() as $email) {
-            foreach ($email->getUsers() as $user) {
-                try {
-                    $email->sendTo($user);
-                } catch (\Exception $e) {
-                    $email->logs()->create([
-                        'email'   => $user->email,
-                        'type'    => 'error',
-                        'message' => $e->getMessage()
-                    ]);
-                    \Log::error($e);
+            $email->getUsers()->chunk(100, function ($users) use ($email) {
+                foreach ($users as $user) {
+                    try {
+                        $email->sendTo($user);
+                    } catch (\Exception $e) {
+                        $email->logs()->create([
+                            'email'   => $user->email,
+                            'type'    => 'error',
+                            'message' => $e->getMessage()
+                        ]);
+                    }
                 }
-            }
+            });
 
             $email->update([
                 'last_user_id' => null
@@ -89,22 +91,23 @@ class SendAutomatedEmails extends Command
 
         // Emails sending once right away or after x time
         foreach (AutomatedEmail::static()->active()->get() as $email) {
-            foreach ($email->jobs as $job) {
-                if ($email->now() || $job->send_at->lte(Carbon::now())) {
+            $email->jobs()->chunk(100, function ($jobs) use ($email) {
+                foreach ($jobs as $job) {
+                    if ($email->now() || $job->send_at->lte(Carbon::now())) {
 
-                    try {
-                        $email->sendTo($job->user, $job);
-                        $job->delete();
-                    } catch (\Exception $e) {
-                        $email->logs()->create([
-                            'email'   => $job->user->email,
-                            'type'    => 'error',
-                            'message' => $e->getMessage()
-                        ]);
-                        \Log::error($e);
+                        try {
+                            $email->sendTo($job->user, $job);
+                            $job->delete();
+                        } catch (\Exception $e) {
+                            $email->logs()->create([
+                                'email'   => $job->user->email,
+                                'type'    => 'error',
+                                'message' => $e->getMessage()
+                            ]);
+                        }
                     }
                 }
-            }
+            });
         }
     }
 }

@@ -129,6 +129,18 @@ class Campaign extends Model
     }
 
     /**
+     * @return mixed
+     */
+    public function getReceivers()
+    {
+        if (!$this->last_email) {
+            return $this->receivers();
+        }
+
+        return $this->receivers()->where('id', '>', $this->last_email);
+    }
+
+    /**
      * Send email
      *
      * @param CampaignReceiver $receiver
@@ -163,17 +175,17 @@ class Campaign extends Model
      * Stop email campaign
      *
      * @param string $status
-     * @param null   $email
+     * @param null   $lastReceiver
      * @return void
      */
-    public function stop($status = 'stopped', $email = null): void
+    public function stop($status = 'stopped', $lastReceiver = null): void
     {
         if ($this->lockFileExists()) {
             unlink($this->lockFile());
         }
 
         $this->status = $this->isDone() ? 'sent' : $status;
-        $this->last_email = ($status !== 'sent') ? ($email ?: $this->last_email) : null;
+        $this->last_email = ($status !== 'sent') ? ($lastReceiver ?: $this->last_email) : null;
         $this->save();
     }
 

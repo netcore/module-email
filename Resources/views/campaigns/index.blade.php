@@ -46,7 +46,7 @@
                                     <td width="10%">
                                         {{ $campaign->getStatus() }}
                                     </td>
-                                    <td width="15%" class="text-center">
+                                    <td width="20%" class="text-center">
                                         <button type="button" class="btn btn-default btn-xs preview" data-toggle="modal"
                                                 data-target="#previewModal"
                                                 data-url="{{ route('admin::campaigns.preview', $campaign) }}">
