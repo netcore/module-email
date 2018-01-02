@@ -3,10 +3,10 @@ $('.datatable').DataTable({
 	serverSide: true,
 	ajax: pagination_url,
 	responsive: true,
-	order: [[1, 'desc']],
+	order: [[0, 'desc']],
 	columns: [
-		{data: 'email', name: 'email'},
         {data: 'created_at', name: 'created_at'},
+		{data: 'email', name: 'email'},
 		{
 			data: 'actions',
 			name: 'actions',

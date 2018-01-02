@@ -33,8 +33,8 @@
                         <table class="table table-bordered datatable">
                             <thead>
                             <tr>
-                                <th>Email</th>
                                 <th>Subscribed at</th>
+                                <th>Email</th>
                                 <th width="15%" class="text-center">Actions</th>
                             </tr>
                             </thead>

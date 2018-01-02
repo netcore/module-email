@@ -4,30 +4,20 @@ namespace Modules\Email\Http\Controllers\Admin;
 
 use Carbon\Carbon;
 use Excel;
-use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
 use Maatwebsite\Excel\Writers\CellWriter;
+use Modules\Email\Datatables\SubscribersDatatable;
 use Modules\Email\Models\Subscriber;
 
 class SubscriberController extends Controller
 {
+    use SubscribersDatatable;
+
     /**
      * @var string
      */
     private $viewNamespace = 'email::subscribers';
-
-    /**
-     * @return mixed
-     */
-    public function pagination()
-    {
-        return datatables()->of(Subscriber::select('id', 'email', 'created_at'))->editColumn('created_at', function ($subscriber) {
-            return $subscriber->created_at->format('d.m.Y H:i');
-        })->addColumn('actions', function ($subscriber) {
-            return view('email::subscribers.tds.actions', compact('subscriber'))->render();
-        })->rawColumns(['actions'])->make(true);
-    }
 
     /**
      * Display a listing of the resource.
