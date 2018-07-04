@@ -27,8 +27,6 @@ installed:
     php artisan migrate
 ```
 
- - Create "lock_files" folder in "storage" and add .gitignore
-
  - Add automated emails command to scheduling in "app/Console/Kernel.php"
 ```
     $schedule->command('automated-emails:send')->everyMinute();
