@@ -101,6 +101,14 @@
                                        v-model="values[key].to"
                                 >
                             </template>
+                            <template v-if="filter.type === 'text'">
+                                <input type="text"
+                                       :name="'filters['+key+']'"
+                                       class="form-control"
+                                       placeholder=""
+                                       v-model="values[key]"
+                                >
+                            </template>
                         </div>
                     </div>
                     <div class="v-cloak--hidden" v-else>No filters!</div>

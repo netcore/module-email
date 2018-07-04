@@ -3,14 +3,15 @@
 namespace Modules\Email\Models;
 
 use Dimsav\Translatable\Translatable;
+use File;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Facades\Mail;
-use Modules\Email\Traits\ReplaceVariables;
-use Modules\Translate\Traits\SyncTranslations;
 use Modules\Email\Emails\CampaignEmail;
+use Modules\Email\Traits\ReplaceVariables;
 use Modules\Email\Translations\CampaignTranslation;
+use Modules\Translate\Traits\SyncTranslations;
 
 class Campaign extends Model
 {
@@ -163,6 +164,14 @@ class Campaign extends Model
      */
     public function start(): void
     {
+        // Create directory for lock files if it does not exist
+        $path = storage_path('lock_files');
+        if (!File::isDirectory($path)) {
+            File::makeDirectory($path, 775);
+            // Add .gitignore
+            File::put($path . '/.gitignore', '*' . PHP_EOL . '!.gitignore');
+        }
+
         file_put_contents($this->lockFile(), time());
 
         // Launch command
